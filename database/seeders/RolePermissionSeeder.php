@@ -101,6 +101,21 @@ class RolePermissionSeeder extends Seeder
             'report.read', 'report.export',
         ]);
 
+        // Site bazlı yönetici (Site → Blok → Apartman → Kat → Daire)
+        $siteManager = Role::create(['name' => 'site_manager']);
+        $siteManager->givePermissionTo([
+            'user.read', 'user.update',
+            'site.read', 'site.update',
+            'block.create', 'block.read', 'block.update', 'block.delete',
+            'apartment.create', 'apartment.read', 'apartment.update', 'apartment.delete',
+            'floor.create', 'floor.read', 'floor.update', 'floor.delete',
+            'flat.create', 'flat.read', 'flat.update', 'flat.delete',
+            'dues.create', 'dues.read', 'dues.update',
+            'announcement.create', 'announcement.read', 'announcement.update', 'announcement.delete',
+            'complaint.create', 'complaint.read', 'complaint.update',
+            'report.read',
+        ]);
+
         // Apartman bazlı yönetici (Apartman → Kat → Daire)
         $apartmentManager = Role::create(['name' => 'apartment_manager']);
         $apartmentManager->givePermissionTo([
