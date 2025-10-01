@@ -8,4 +8,19 @@ use Illuminate\Database\Eloquent\Model;
 class Complaint extends Model
 {
     use HasFactory;
+
+    public function apartment()
+    {
+        return $this->belongsTo(Apartment::class);
+    }
+
+    public function flat()
+    {
+        return $this->belongsTo(Flat::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

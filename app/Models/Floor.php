@@ -8,4 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class Floor extends Model
 {
     use HasFactory;
+
+    public function apartment()
+    {
+        return $this->belongsTo(Apartment::class);
+    }
+
+    public function flats()
+    {
+        return $this->hasMany(Flat::class);
+    }
 }

@@ -26,9 +26,22 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
         'email',
         'password',
+        'phone',
+        'national_id',
+        'gender',
+        'birth_date',
+        'address',
+        'emergency_contact_name',
+        'emergency_contact_phone',
+        'profile_photo',
+        'is_active',
+        'last_login_at',
+        'notification_email',
+        'notification_sms',
     ];
 
     /**
@@ -50,6 +63,11 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'birth_date' => 'date',
+        'last_login_at' => 'datetime',
+        'is_active' => 'boolean',
+        'notification_email' => 'boolean',
+        'notification_sms' => 'boolean',
     ];
 
     /**
@@ -60,4 +78,24 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    public function flats()
+    {
+        return $this->hasMany(FlatResident::class);
+    }
+
+    public function complaints()
+    {
+        return $this->hasMany(Complaint::class);
+    }
+
+    public function messagesSent()
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
+
+    public function messagesReceived()
+    {
+        return $this->hasMany(Message::class, 'receiver_id');
+    }
 }
