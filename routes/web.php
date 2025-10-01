@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SiteController;
+use App\Http\Controllers\BlockController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,4 +27,11 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
+
+    // Site yönetimi (admin, site_manager, super_admin)
+    Route::middleware(['role:admin,site_manager,super_admin'])->group(function () {
+        Route::resource('sites', SiteController::class);
+        Route::resource('blocks', BlockController::class);
+        Route::resource('sites.blocks', BlockController::class);
+    });
 });

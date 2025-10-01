@@ -4,10 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Site extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
+
+    protected $guarded = [];
+
+    protected $casts = [
+        'total_blocks' => 'integer',
+        'total_apartments' => 'integer',
+        'total_floors' => 'integer',
+        'flats_per_floor' => 'integer',
+    ];
 
     public function blocks()
     {
@@ -17,5 +27,15 @@ class Site extends Model
     public function apartments()
     {
         return $this->hasMany(Apartment::class);
+    }
+
+    public function getStatusLabelAttribute(): string
+    {
+        return match ($this->status) {
+            'active' => 'Aktif',
+            'inactive' => 'Pasif',
+            'maintenance' => 'Bakımda',
+            default => (string) $this->status,
+        };
     }
 }
