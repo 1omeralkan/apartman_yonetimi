@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\BlockController;
+use App\Http\Controllers\ApartmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,5 +34,6 @@ Route::middleware([
         Route::resource('sites', SiteController::class);
         Route::resource('blocks', BlockController::class);
         Route::resource('sites.blocks', BlockController::class);
+        Route::resource('apartments', ApartmentController::class);
     });
 });

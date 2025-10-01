@@ -69,7 +69,7 @@
         <div class="text-white-50 small mb-2 text-uppercase">Genel</div>
         <a href="{{ route('sites.index') }}" class="{{ request()->is('sites*') ? 'active' : '' }}"><i class="bi bi-buildings me-2"></i> Siteler</a>
         <a href="{{ route('blocks.index') }}" class="{{ request()->is('blocks*') ? 'active' : '' }}"><i class="bi bi-diagram-3 me-2"></i> Bloklar</a>
-        <a href="#" class="disabled"><i class="bi bi-houses me-2"></i> Apartmanlar</a>
+        <a href="{{ route('apartments.index') }}" class="{{ request()->is('apartments*') ? 'active' : '' }}"><i class="bi bi-houses me-2"></i> Apartmanlar</a>
         <a href="#" class="disabled"><i class="bi bi-door-open me-2"></i> Daireler</a>
         <div class="text-white-50 small my-2 text-uppercase">Operasyon</div>
         <a href="#" class="disabled"><i class="bi bi-cash-coin me-2"></i> Finans</a>
