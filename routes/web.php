@@ -18,7 +18,10 @@ use App\Http\Controllers\SettlementController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    if (auth()->check()) {
+        return redirect()->route('dashboard');
+    }
+    return view('landing');
 });
 
 Route::middleware([
