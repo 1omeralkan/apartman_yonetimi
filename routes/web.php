@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\BlockController;
 use App\Http\Controllers\ApartmentController;
+use App\Http\Controllers\SettlementController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,5 +36,8 @@ Route::middleware([
         Route::resource('blocks', BlockController::class);
         Route::resource('sites.blocks', BlockController::class);
         Route::resource('apartments', ApartmentController::class);
+        Route::get('settlement', [SettlementController::class, 'index'])->name('settlement.index');
+        Route::get('settlement/block/{block}', [SettlementController::class, 'block'])->name('settlement.block');
+        Route::get('settlement/apartment/{apartment}', [SettlementController::class, 'apartment'])->name('settlement.apartment');
     });
 });

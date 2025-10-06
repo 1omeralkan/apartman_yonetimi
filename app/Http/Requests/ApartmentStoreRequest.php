@@ -30,7 +30,7 @@ class ApartmentStoreRequest extends FormRequest
             'address' => ['required','string'],
             'status' => ['required','in:active,inactive,maintenance'],
             'total_floors' => ['required','integer','min:0'],
-            'total_flats' => ['required','integer','min:0'],
+            'total_flats' => ['nullable','integer','min:0'],
             'flats_per_floor' => ['required','integer','min:0'],
             'has_elevator' => ['required','boolean'],
             'has_parking' => ['required','boolean'],

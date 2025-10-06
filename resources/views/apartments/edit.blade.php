@@ -63,14 +63,63 @@
                     @error('total_floors')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
                 <div class="col-md-2">
-                    <label class="form-label">Toplam Daire</label>
-                    <input type="number" name="total_flats" value="{{ old('total_flats', $apartment->total_flats) }}" class="form-control @error('total_flats') is-invalid @enderror">
-                    @error('total_flats')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                </div>
-                <div class="col-md-2">
                     <label class="form-label">Kat Başına Daire</label>
                     <input type="number" name="flats_per_floor" value="{{ old('flats_per_floor', $apartment->flats_per_floor) }}" class="form-control @error('flats_per_floor') is-invalid @enderror">
                     @error('flats_per_floor')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Varsayılan Daire Tipi</label>
+                    <select name="flat_type" class="form-select">
+                        @php($types = ['1+0','1+1','2+1','3+1','4+1','5+1'])
+                        @foreach($types as $type)
+                            <option value="{{ $type }}" {{ old('flat_type', $flatDefaults['flat_type'] ?? '2+1') === $type ? 'selected' : '' }}>{{ $type }}</option>
+                        @endforeach
+                    </select>
+                    <div class="form-text">Otomatik daire üretimi için varsayılan tip.</div>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Varsayılan Aylık Aidat</label>
+                    <div class="input-group">
+                        <span class="input-group-text">₺</span>
+                        <input type="number" step="0.01" min="0" name="monthly_dues" value="{{ old('monthly_dues', $flatDefaults['monthly_dues'] ?? null) }}" class="form-control">
+                    </div>
+                    <div class="form-text">Otomatik oluşturulacak dairelere başlangıç aidatı (opsiyonel).</div>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Balkon</label>
+                    <select name="has_balcony" class="form-select">
+                        @php($hasBalconyDefault = old('has_balcony', isset($flatDefaults['has_balcony']) ? (int)$flatDefaults['has_balcony'] : 0))
+                        <option value="0" {{ (string)$hasBalconyDefault==='0' ? 'selected' : '' }}>Yok</option>
+                        <option value="1" {{ (string)$hasBalconyDefault==='1' ? 'selected' : '' }}>Var</option>
+                    </select>
+                    <div class="form-text">Otomatik oluşturulan daireler için varsayılan balkon bilgisi.</div>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Varsayılan Brüt Alan (m²)</label>
+                    <div class="input-group">
+                        <input type="number" step="0.01" min="0" name="gross_area" value="{{ old('gross_area', $flatDefaults['gross_area'] ?? null) }}" class="form-control">
+                        <span class="input-group-text">m²</span>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Varsayılan Net Alan (m²)</label>
+                    <div class="input-group">
+                        <input type="number" step="0.01" min="0" name="net_area" value="{{ old('net_area', $flatDefaults['net_area'] ?? null) }}" class="form-control">
+                        <span class="input-group-text">m²</span>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Varsayılan Kullanım Alanı (m²)</label>
+                    <div class="input-group">
+                        <input type="number" step="0.01" min="0" name="area" value="{{ old('area', $flatDefaults['area'] ?? null) }}" class="form-control">
+                        <span class="input-group-text">m²</span>
+                    </div>
                 </div>
 
                 <div class="col-md-2">

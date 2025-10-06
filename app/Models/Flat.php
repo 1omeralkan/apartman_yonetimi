@@ -9,9 +9,22 @@ class Flat extends Model
 {
     use HasFactory;
 
-    public function floor()
+    protected $guarded = [];
+
+    protected $casts = [
+        'apartment_id' => 'integer',
+        'floor_number' => 'integer',
+        'flat_number' => 'integer',
+        'area' => 'decimal:2',
+        'monthly_dues' => 'decimal:2',
+        'net_area' => 'decimal:2',
+        'gross_area' => 'decimal:2',
+        'has_balcony' => 'boolean',
+    ];
+
+    public function apartment()
     {
-        return $this->belongsTo(Floor::class);
+        return $this->belongsTo(Apartment::class);
     }
 
     public function residents()

@@ -30,6 +30,7 @@
         .sidebar a{ color:var(--sidebar-text); text-decoration:none; display:block; padding:.65rem 1rem; border-radius:.5rem; transition:transform .15s ease, background-color .2s ease, color .2s ease; }
         .sidebar a i{ opacity:.85; transition:transform .15s ease; }
         .sidebar a.active, .sidebar a:hover{ background:var(--sidebar-hover); color:#fff; transform:translateX(2px); }
+        main{ display:flex; flex-direction:column; min-height:100vh; }
         .content-area{ padding:28px; }
         .card{ border:0; box-shadow:0 8px 22px rgba(16,24,40,.08); border-radius:14px; transition:transform .2s ease, box-shadow .2s ease; }
         .card:hover{ transform:translateY(-2px); box-shadow:0 12px 26px rgba(16,24,40,.12); }
@@ -45,7 +46,7 @@
         .badge.text-bg-warning{ background:var(--warning)!important; }
         .badge.text-bg-secondary{ background:var(--secondary)!important; }
         .alert{ border-radius:14px; box-shadow:0 8px 22px rgba(2,6,23,.08); }
-        .footer{ color:#98a2b3; font-size:.875rem; }
+        .footer{ color:#98a2b3; font-size:.875rem; margin-top:auto; }
     </style>
 </head>
 <body>
@@ -74,6 +75,7 @@
         <div class="text-white-50 small my-2 text-uppercase">Operasyon</div>
         <a href="#" class="disabled"><i class="bi bi-cash-coin me-2"></i> Finans</a>
         <a href="#" class="disabled"><i class="bi bi-megaphone me-2"></i> Duyurular</a>
+        <a href="{{ route('settlement.index') }}" class="{{ request()->is('settlement') ? 'active' : '' }}"><i class="bi bi-people me-2"></i> Yerleşim Yönetimi</a>
     </aside>
 
     <main class="flex-grow-1">

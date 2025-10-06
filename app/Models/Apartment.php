@@ -32,14 +32,9 @@ class Apartment extends Model
         return $this->belongsTo(Block::class);
     }
 
-    public function floors()
-    {
-        return $this->hasMany(Floor::class);
-    }
-
     public function flats()
     {
-        return $this->hasManyThrough(Flat::class, Floor::class);
+        return $this->hasMany(Flat::class);
     }
 
     public function expenses()

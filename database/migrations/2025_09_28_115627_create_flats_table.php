@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('flats', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('floor_id')->constrained('floors')->onDelete('cascade');
+            $table->foreignId('apartment_id')->constrained('apartments')->onDelete('cascade');
+            $table->integer('floor_number');
             $table->integer('flat_number');
             $table->enum('flat_type', ['1+0', '1+1', '2+1', '3+1', '4+1', '5+1']);
             $table->decimal('area', 8, 2)->nullable();
@@ -25,8 +26,8 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamps();
 
-            $table->index('floor_id');
-            $table->unique(['floor_id', 'flat_number']);
+            $table->index(['apartment_id','floor_number']);
+            $table->unique(['apartment_id','floor_number','flat_number']);
         });
     }
 
