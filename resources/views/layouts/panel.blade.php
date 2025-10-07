@@ -25,6 +25,11 @@
         html,body{ height:100%; }
         body{ background:linear-gradient(180deg,#f7f9fc 0,#eef3f9 100%); color:var(--ink); }
         .navbar{ backdrop-filter:saturate(140%) blur(6px); border-bottom:1px solid rgba(2,6,23,.06); }
+        .brand-logo{ display:flex; align-items:center; gap:10px; }
+        .brand-logo .logo-box{ width:34px; height:34px; border-radius:10px; display:inline-flex; align-items:center; justify-content:center; color:#fff; background:linear-gradient(135deg,#2563eb 0%, #22c55e 100%); box-shadow:0 8px 22px rgba(37,99,235,.35); animation: floatY 4s ease-in-out infinite; }
+        .brand-logo .brand-text{ font-weight:600; letter-spacing:.2px; background:linear-gradient(90deg,#0ea5e9, #22c55e, #a855f7, #0ea5e9); background-size:200% auto; -webkit-background-clip:text; background-clip:text; color:transparent; animation: shimmer 6s linear infinite; }
+        @keyframes shimmer{ 0%{ background-position:0% 50%; } 100%{ background-position:200% 50%; } }
+        @keyframes floatY{ 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-3px); } }
         .sidebar{ width:280px; min-height:100vh; background:var(--sidebar-bg); position:sticky; top:0; }
         .sidebar .brand{ color:#fff; font-weight:600; letter-spacing:.3px; }
         .sidebar a{ color:var(--sidebar-text); text-decoration:none; display:block; padding:.65rem 1rem; border-radius:.5rem; transition:transform .15s ease, background-color .2s ease, color .2s ease; }
@@ -52,13 +57,31 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
     <div class="container-fluid">
-        <a class="navbar-brand fw-semibold" href="{{ url('/dashboard') }}">
-            <i class="bi bi-grid-1x2 me-2 text-primary"></i>{{ config('app.name', 'Apartman Yönetimi') }}
-        </a>
+        <div class="navbar-brand brand-logo" style="cursor:default; user-select:none;">
+            <span class="logo-box"><i class="bi bi-buildings"></i></span>
+            <span class="brand-text">Apartman Yönetimi</span>
+        </div>
         <div class="ms-auto d-flex align-items-center gap-2">
             @auth
-                <span class="text-muted small">{{ auth()->user()->first_name ?? auth()->user()->name }}</span>
-                <a class="btn btn-sm btn-primary" href="{{ route('dashboard') }}"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a>
+                <div class="dropdown">
+                    <button class="btn btn-light d-flex align-items-center gap-2 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <span class="rounded-circle d-inline-flex justify-content-center align-items-center" style="width:28px;height:28px;background:#e2e8f0;color:#334155;font-weight:600;">
+                            {{ strtoupper(Str::substr(auth()->user()->first_name ?? auth()->user()->name,0,1)) }}
+                        </span>
+                        <span class="small text-muted">{{ auth()->user()->first_name ?? auth()->user()->name }}</span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                        <li><a class="dropdown-item" href="{{ route('profile.show') }}"><i class="bi bi-person me-2"></i>Profil</a></li>
+                        <li><a class="dropdown-item" href="{{ route('dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <form method="POST" action="{{ route('logout') }}" class="px-3" data-confirm="Çıkış yapılsın mı?">
+                                @csrf
+                                <button class="btn btn-link dropdown-item px-0"><i class="bi bi-box-arrow-right me-2"></i>Çıkış</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
             @endauth
         </div>
     </div>
@@ -71,7 +94,7 @@
         <a href="{{ route('sites.index') }}" class="{{ request()->is('sites*') ? 'active' : '' }}"><i class="bi bi-buildings me-2"></i> Siteler</a>
         <a href="{{ route('blocks.index') }}" class="{{ request()->is('blocks*') ? 'active' : '' }}"><i class="bi bi-diagram-3 me-2"></i> Bloklar</a>
         <a href="{{ route('apartments.index') }}" class="{{ request()->is('apartments*') ? 'active' : '' }}"><i class="bi bi-houses me-2"></i> Apartmanlar</a>
-        <a href="#" class="disabled"><i class="bi bi-door-open me-2"></i> Daireler</a>
+        <a href="{{ route('flats.index') }}" class="{{ request()->is('flats*') ? 'active' : '' }}"><i class="bi bi-door-open me-2"></i> Daireler</a>
         <div class="text-white-50 small my-2 text-uppercase">Operasyon</div>
         <a href="#" class="disabled"><i class="bi bi-cash-coin me-2"></i> Finans</a>
         <a href="#" class="disabled"><i class="bi bi-megaphone me-2"></i> Duyurular</a>
@@ -101,6 +124,46 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // Uyarıları otomatik kapat (3.5sn)
+    window.addEventListener('load', () => {
+        const alerts = document.querySelectorAll('.alert');
+        setTimeout(() => alerts.forEach(a => new bootstrap.Alert(a).close()), 3500);
+
+        // Global SweetAlert confirm handler
+        document.body.addEventListener('submit', function(e){
+            const form = e.target;
+            if (form && form.matches('form[data-confirm]')) {
+                e.preventDefault();
+                const message = form.getAttribute('data-confirm') || 'Bu işlemi onaylıyor musunuz?';
+                Swal.fire({
+                    title: 'Emin misiniz?',
+                    text: message,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Evet',
+                    cancelButtonText: 'Vazgeç',
+                    confirmButtonColor: '#2563eb'
+                }).then((result)=>{ if(result.isConfirmed){ form.submit(); } });
+            }
+        }, true);
+
+        // Success toast
+        const successMsg = document.querySelector('.alert.alert-success');
+        if (successMsg) {
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: successMsg.textContent.trim(),
+                showConfirmButton: false,
+                timer: 2500,
+                timerProgressBar: true
+            });
+        }
+    });
+    </script>
 <script>
     // Uyarıları otomatik kapat (3.5sn)
     window.addEventListener('load', () => {

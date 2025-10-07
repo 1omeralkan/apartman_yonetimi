@@ -9,7 +9,7 @@
 
     <div class="card shadow-sm">
         <div class="card-body">
-            <form action="{{ route('sites.store') }}" method="POST" class="row g-3">
+            <form action="{{ route('sites.store') }}" method="POST" class="row g-3" data-confirm="Yeni site oluşturulsun mu?">
                 @csrf
 
                 <div class="col-md-6">

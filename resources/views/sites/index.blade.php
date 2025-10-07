@@ -39,7 +39,7 @@
                             <td>{{ $site->total_floors }} / {{ $site->flats_per_floor }}</td>
                             <td class="text-end">
                                 <a href="{{ route('sites.edit', $site) }}" class="btn btn-sm btn-outline-primary">Düzenle</a>
-                                <form action="{{ route('sites.destroy', $site) }}" method="POST" class="d-inline" onsubmit="return confirm('Silmek istediğine emin misin?')">
+                                <form action="{{ route('sites.destroy', $site) }}" method="POST" class="d-inline" data-confirm="Siteyi silmek istediğinize emin misiniz? Bu işlem geri alınamaz.">
                                     @csrf
                                     @method('DELETE')
                                     <button class="btn btn-sm btn-outline-danger">Sil</button>

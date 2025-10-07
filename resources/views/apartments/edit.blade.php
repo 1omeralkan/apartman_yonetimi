@@ -140,7 +140,7 @@
                 </div>
 
                 <div class="col-12 text-end">
-                    <button class="btn btn-primary">Güncelle</button>
+                    <button class="btn btn-primary" data-confirm="Apartman bilgileri güncellensin mi? Kat/daire değişiklikleri planı etkileyebilir.">Güncelle</button>
                 </div>
             </form>
         </div>

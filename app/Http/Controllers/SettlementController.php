@@ -95,6 +95,34 @@ class SettlementController extends Controller
 
         return redirect()->route('settlement.apartment', $flat->apartment_id)->with('success','Sakin atandı.');
     }
+
+    public function flat(Flat $flat): View
+    {
+        $flat->load(['apartment.block.site','residents.user']);
+        return view('settlement.flat', compact('flat'));
+    }
+
+    public function unassign(FlatResident $resident)
+    {
+        $flatId = $resident->flat_id;
+        // Pasifleştir (silmek yerine soft-delete ya da status inactive)
+        if (method_exists($resident, 'delete')) {
+            $resident->delete();
+        } else {
+            $resident->status = 'inactive';
+            $resident->save();
+        }
+
+        // Dairenin durumunu güncelle
+        $flat = Flat::find($flatId);
+        if ($flat) {
+            $hasActive = $flat->residents()->where('status','active')->exists();
+            $flat->status = $hasActive ? 'occupied' : 'empty';
+            $flat->save();
+        }
+
+        return back()->with('success','Sakin kaldırıldı.');
+    }
 }
 
 

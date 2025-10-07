@@ -61,7 +61,7 @@
                         <td>{{ $block->created_at?->format('d.m.Y') }}</td>
                         <td class="text-end">
                             <a href="{{ route('blocks.edit', $block) }}" class="btn btn-sm btn-outline-secondary">Düzenle</a>
-                            <form action="{{ route('blocks.destroy', $block) }}" method="POST" class="d-inline" onsubmit="return confirm('Silmek istediğinize emin misiniz?')">
+                            <form action="{{ route('blocks.destroy', $block) }}" method="POST" class="d-inline" data-confirm="Bloku silmek istediğinize emin misiniz? Bu işlem geri alınamaz.">
                                 @csrf
                                 @method('DELETE')
                                 <button class="btn btn-sm btn-outline-danger">Sil</button>

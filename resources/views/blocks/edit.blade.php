@@ -9,7 +9,7 @@
 
     <div class="card shadow-sm">
         <div class="card-body">
-            <form action="{{ route('blocks.update', $block) }}" method="POST" class="row g-3">
+            <form action="{{ route('blocks.update', $block) }}" method="POST" class="row g-3" data-confirm="Blok bilgileri güncellensin mi?">
                 @csrf
                 @method('PUT')
 

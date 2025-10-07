@@ -58,7 +58,7 @@
                         <td>{{ number_format($apartment->total_flats) }}</td>
                         <td class="text-end">
                             <a href="{{ route('apartments.edit', $apartment) }}" class="btn btn-sm btn-outline-secondary">Düzenle</a>
-                            <form action="{{ route('apartments.destroy', $apartment) }}" method="POST" class="d-inline" onsubmit="return confirm('Silmek istediğinize emin misiniz?')">
+                            <form action="{{ route('apartments.destroy', $apartment) }}" method="POST" class="d-inline" data-confirm="Apartmanı silmek istediğinize emin misiniz? İlgili daireler etkilenebilir.">
                                 @csrf
                                 @method('DELETE')
                                 <button class="btn btn-sm btn-outline-danger">Sil</button>

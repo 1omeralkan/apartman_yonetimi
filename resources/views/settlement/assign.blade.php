@@ -9,7 +9,7 @@
 
     <div class="card shadow-sm">
         <div class="card-body">
-            <form action="{{ route('settlement.assign', $flat) }}" method="POST" class="row g-3">
+            <form id="assignForm" action="{{ route('settlement.assign', $flat) }}" method="POST" class="row g-3">
                 @csrf
                 <div class="col-md-6">
                     <label class="form-label">Kullanıcı</label>
@@ -61,12 +61,53 @@
                 </div>
 
                 <div class="col-12 text-end">
-                    <button class="btn btn-primary">Kaydet</button>
+                    <button type="submit" class="btn btn-primary">Kaydet</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    (function(){
+        const form = document.getElementById('assignForm');
+        if(!form) return;
+        form.addEventListener('submit', function(e){
+            e.preventDefault();
+            const userSelect = form.querySelector('select[name="user_id"]');
+            const residentType = form.querySelector('select[name="resident_type"]');
+            const status = form.querySelector('select[name="status"]');
+            const moveIn = form.querySelector('input[name="move_in_date"]').value;
+            const moveOut = form.querySelector('input[name="move_out_date"]').value;
+            const rent = form.querySelector('input[name="rent_amount"]').value;
+
+            const userText = userSelect.options[userSelect.selectedIndex]?.text || '';
+            const typeText = residentType.options[residentType.selectedIndex]?.text || '';
+            const statusText = status.options[status.selectedIndex]?.text || '';
+
+            Swal.fire({
+                title: 'Sakin atansın mı?',
+                html: `
+                    <div class="text-start small">
+                        <div><strong>Kullanıcı:</strong> ${userText}</div>
+                        <div><strong>Tip:</strong> ${typeText} • <strong>Durum:</strong> ${statusText}</div>
+                        <div><strong>Giriş:</strong> ${moveIn || '-'} ${moveOut ? ' • <strong>Çıkış:</strong> '+moveOut : ''}</div>
+                        ${rent ? `<div><strong>Kira:</strong> ₺${rent}</div>` : ''}
+                    </div>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Evet, Ata',
+                cancelButtonText: 'Vazgeç',
+                confirmButtonColor: '#2563eb'
+            }).then((result)=>{
+                if(result.isConfirmed){
+                    form.submit();
+                }
+            });
+        });
+    })();
+</script>
 @endsection
 
 
