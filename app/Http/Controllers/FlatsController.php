@@ -47,7 +47,16 @@ class FlatsController extends Controller
         $blocks = $blockId || $siteId ? Block::when($siteId, fn($q)=>$q->where('site_id',$siteId))->orderBy('name')->get(['id','name','site_id']) : collect();
         $apartments = $apartmentId || $blockId ? Apartment::when($blockId, fn($q)=>$q->where('block_id',$blockId))->orderBy('name')->get(['id','name','block_id']) : collect();
 
-        return view('flats.index', compact('flats','sites','blocks','apartments','siteId','blockId','apartmentId','status','flatType','floorMin','floorMax','flatNo'));
+        $statusOptions = ['empty'=>'Boş','occupied'=>'Dolu','maintenance'=>'Bakım','renovation'=>'Tadilat'];
+        $flatTypes = ['1+0','1+1','2+1','3+1','4+1','5+1'];
+        $statusClassMap = ['empty' => 'secondary', 'occupied' => 'success', 'maintenance' => 'warning', 'renovation' => 'warning'];
+
+        return view('flats.index', compact(
+            'flats','sites','blocks','apartments',
+            'siteId','blockId','apartmentId',
+            'status','flatType','floorMin','floorMax','flatNo',
+            'statusOptions','flatTypes','statusClassMap'
+        ));
     }
 }
 

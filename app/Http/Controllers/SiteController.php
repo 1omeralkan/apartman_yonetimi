@@ -17,7 +17,8 @@ class SiteController extends Controller
     public function index(): View
     {
         $sites = Site::latest()->paginate(10);
-        return view('sites.index', compact('sites'));
+        $statusClassMap = ['active' => 'success','inactive' => 'secondary','maintenance' => 'warning'];
+        return view('sites.index', compact('sites','statusClassMap'));
     }
 
     /**
@@ -43,7 +44,8 @@ class SiteController extends Controller
      */
     public function show(Site $site): View
     {
-        return view('sites.show', compact('site'));
+        $statusClassMap = ['active' => 'success','inactive' => 'secondary','maintenance' => 'warning'];
+        return view('sites.show', compact('site','statusClassMap'));
     }
 
     /**

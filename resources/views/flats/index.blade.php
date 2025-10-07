@@ -8,7 +8,7 @@
 
     <div class="card mb-3">
         <div class="card-body">
-            <form method="GET" class="row g-2">
+            <form method="GET" class="row g-2" aria-label="Daire filtre formu">
                 <div class="col-md-3">
                     <label class="form-label">Site</label>
                     <select name="site_id" class="form-select" onchange="this.form.submit()">
@@ -40,8 +40,8 @@
                     <label class="form-label">Durum</label>
                     <select name="status" class="form-select" onchange="this.form.submit()">
                         <option value="">Tümü</option>
-                        @foreach(['empty'=>'Boş','occupied'=>'Dolu','maintenance'=>'Bakım','renovation'=>'Tadilat'] as $k=>$v)
-                            <option value="{{ $k }}" {{ $status===$k ? 'selected' : '' }}>{{ $v }}</option>
+                        @foreach(($statusOptions ?? []) as $k=>$v)
+                            <option value="{{ $k }}" {{ (string)($status ?? '') === (string)$k ? 'selected' : '' }}>{{ $v }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -61,13 +61,16 @@
                     <label class="form-label">Daire Tipi</label>
                     <select name="flat_type" class="form-select">
                         <option value="">Tümü</option>
-                        @foreach(['1+0','1+1','2+1','3+1','4+1','5+1'] as $t)
-                            <option value="{{ $t }}" {{ $flatType===$t ? 'selected' : '' }}>{{ $t }}</option>
+                        @foreach(($flatTypes ?? []) as $t)
+                            <option value="{{ $t }}" {{ (string)($flatType ?? '') === (string)$t ? 'selected' : '' }}>{{ $t }}</option>
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-1 d-flex align-items-end">
-                    <button class="btn btn-primary w-100">Ara</button>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button class="btn btn-primary w-100"><i class="bi bi-search me-1"></i>Ara</button>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <a href="{{ route('flats.index') }}" class="btn btn-light w-100"><i class="bi bi-x-circle me-1"></i>Temizle</a>
                 </div>
             </form>
         </div>
@@ -75,7 +78,8 @@
 
     <div class="card">
         <div class="table-responsive">
-            <table class="table align-middle mb-0">
+            <table class="table align-middle mb-0" aria-label="Daireler tablosu">
+                <caption class="px-3 pt-3 text-muted small">Kayıtlı daire listesi. Satıra tıklayarak detay sayfasına gidebilirsiniz.</caption>
                 <thead>
                     <tr>
                         <th>Site</th>
@@ -91,7 +95,7 @@
                 </thead>
                 <tbody>
                     @forelse($flats as $flat)
-                        <tr>
+                        <tr class="table-row" onclick="window.location='{{ route('settlement.flat', $flat) }}'" style="cursor:pointer;">
                             <td>{{ $flat->apartment?->block?->site?->name }}</td>
                             <td>{{ $flat->apartment?->block?->name }}</td>
                             <td>{{ $flat->apartment?->name }}</td>
@@ -99,25 +103,36 @@
                             <td>{{ $flat->flat_number }}</td>
                             <td>{{ $flat->flat_type }}</td>
                             <td>
-                                @php($label = $flat->status === 'empty' ? 'Boş' : ($flat->status === 'occupied' ? 'Dolu' : ($flat->status==='maintenance'?'Bakım':'Tadilat')))
-                                <span class="badge text-bg-{{ $flat->status === 'empty' ? 'secondary' : ($flat->status === 'occupied' ? 'success' : 'warning') }}">{{ $label }}</span>
+                                <span class="badge text-bg-{{ $statusClassMap[$flat->status] ?? 'secondary' }}">
+                                    {{ ($statusOptions[$flat->status] ?? null) ?? ucfirst($flat->status) }}
+                                </span>
                             </td>
                             <td>{{ $flat->active_residents_count }}</td>
                             <td class="text-end">
-                                <a href="{{ route('settlement.flat', $flat) }}" class="btn btn-sm btn-outline-secondary">Detay</a>
-                                <a href="{{ route('settlement.assign.form', $flat) }}" class="btn btn-sm btn-outline-primary">Sakin Ata</a>
+                                <a href="{{ route('settlement.flat', $flat) }}" class="btn btn-sm btn-outline-secondary" title="Daire detayı"><i class="bi bi-box-arrow-up-right me-1"></i>Detay</a>
+                                <a href="{{ route('settlement.assign.form', $flat) }}" class="btn btn-sm btn-outline-primary" title="Sakin ata"><i class="bi bi-person-plus me-1"></i>Sakin Ata</a>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="text-center text-muted py-4">Kayıt bulunamadı.</td>
+                            <td colspan="9" class="text-center text-muted py-5">
+                                <div class="d-inline-flex flex-column align-items-center gap-2">
+                                    <i class="bi bi-door-open fs-1 text-secondary"></i>
+                                    <div>Kayıt bulunamadı.</div>
+                                </div>
+                            </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
         @if($flats->hasPages())
-            <div class="card-footer">{{ $flats->links() }}</div>
+            <div class="card-footer d-flex justify-content-between align-items-center">
+                <div class="text-muted small">
+                    {{ $flats->firstItem() }}–{{ $flats->lastItem() }} / {{ $flats->total() }} kayıt
+                </div>
+                <div>{{ $flats->links() }}</div>
+            </div>
         @endif
     </div>
 </div>

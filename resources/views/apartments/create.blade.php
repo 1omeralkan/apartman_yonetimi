@@ -70,8 +70,7 @@
                 <div class="col-md-4">
                     <label class="form-label">Varsayılan Daire Tipi</label>
                     <select name="flat_type" class="form-select">
-                        @php($types = ['1+0','1+1','2+1','3+1','4+1','5+1'])
-                        @foreach($types as $type)
+                        @foreach(($flatTypes ?? ['1+0','1+1','2+1','3+1','4+1','5+1']) as $type)
                             <option value="{{ $type }}" {{ old('flat_type','2+1') === $type ? 'selected' : '' }}>{{ $type }}</option>
                         @endforeach
                     </select>

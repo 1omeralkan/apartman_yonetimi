@@ -29,7 +29,19 @@ class ApartmentController extends Controller
         $apartments = $query->paginate(10)->withQueryString();
         $sites = Site::orderBy('name')->get(['id','name']);
         $blocks = Block::orderBy('name')->get(['id','name']);
-        return view('apartments.index', compact('apartments','sites','blocks'));
+        $selectedSiteId = $request->input('site_id');
+        $selectedBlockId = $request->input('block_id');
+        $statusClassMap = ['active' => 'success', 'inactive' => 'secondary', 'maintenance' => 'warning'];
+        $statusLabelMap = ['active' => 'Aktif', 'inactive' => 'Pasif', 'maintenance' => 'Bakımda'];
+        return view('apartments.index', compact(
+            'apartments',
+            'sites',
+            'blocks',
+            'selectedSiteId',
+            'selectedBlockId',
+            'statusClassMap',
+            'statusLabelMap'
+        ));
     }
 
     /**
@@ -39,7 +51,8 @@ class ApartmentController extends Controller
     {
         $sites = Site::orderBy('name')->get(['id','name']);
         $blocks = Block::orderBy('name')->get(['id','name','site_id']);
-        return view('apartments.create', compact('sites','blocks'));
+        $flatTypes = ['1+0','1+1','2+1','3+1','4+1','5+1'];
+        return view('apartments.create', compact('sites','blocks','flatTypes'));
     }
 
     /**
@@ -91,7 +104,9 @@ class ApartmentController extends Controller
     public function show(Apartment $apartment): View
     {
         $apartment->load(['site','block']);
-        return view('apartments.show', compact('apartment'));
+        $statusClassMap = ['active' => 'success', 'inactive' => 'secondary', 'maintenance' => 'warning'];
+        $statusLabelMap = ['active' => 'Aktif', 'inactive' => 'Pasif', 'maintenance' => 'Bakımda'];
+        return view('apartments.show', compact('apartment','statusClassMap','statusLabelMap'));
     }
 
     /**
@@ -112,7 +127,10 @@ class ApartmentController extends Controller
             'area' => Flat::where('apartment_id', $apartment->id)->avg('area'),
         ];
 
-        return view('apartments.edit', compact('apartment','sites','blocks','flatDefaults'));
+        $flatTypes = ['1+0','1+1','2+1','3+1','4+1','5+1'];
+        $hasBalconyDefault = (int) ($flatDefaults['has_balcony'] ?? 0);
+
+        return view('apartments.edit', compact('apartment','sites','blocks','flatDefaults','flatTypes','hasBalconyDefault'));
     }
 
     /**

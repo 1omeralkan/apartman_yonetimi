@@ -71,8 +71,7 @@
                 <div class="col-md-4">
                     <label class="form-label">Varsayılan Daire Tipi</label>
                     <select name="flat_type" class="form-select">
-                        @php($types = ['1+0','1+1','2+1','3+1','4+1','5+1'])
-                        @foreach($types as $type)
+                        @foreach(($flatTypes ?? ['1+0','1+1','2+1','3+1','4+1','5+1']) as $type)
                             <option value="{{ $type }}" {{ old('flat_type', $flatDefaults['flat_type'] ?? '2+1') === $type ? 'selected' : '' }}>{{ $type }}</option>
                         @endforeach
                     </select>
@@ -91,9 +90,9 @@
                 <div class="col-md-4">
                     <label class="form-label">Balkon</label>
                     <select name="has_balcony" class="form-select">
-                        @php($hasBalconyDefault = old('has_balcony', isset($flatDefaults['has_balcony']) ? (int)$flatDefaults['has_balcony'] : 0))
-                        <option value="0" {{ (string)$hasBalconyDefault==='0' ? 'selected' : '' }}>Yok</option>
-                        <option value="1" {{ (string)$hasBalconyDefault==='1' ? 'selected' : '' }}>Var</option>
+                        @php($hbd = old('has_balcony', isset($hasBalconyDefault) ? (int)$hasBalconyDefault : (isset($flatDefaults['has_balcony']) ? (int)$flatDefaults['has_balcony'] : 0)))
+                        <option value="0" {{ (string)$hbd==='0' ? 'selected' : '' }}>Yok</option>
+                        <option value="1" {{ (string)$hbd==='1' ? 'selected' : '' }}>Var</option>
                     </select>
                     <div class="form-text">Otomatik oluşturulan daireler için varsayılan balkon bilgisi.</div>
                 </div>

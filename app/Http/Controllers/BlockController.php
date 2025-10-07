@@ -25,8 +25,11 @@ class BlockController extends Controller
 
         $blocks = $query->paginate(10)->withQueryString();
         $sites = Site::orderBy('name')->get(['id','name']);
+        $selectedSiteId = $request->input('site_id');
+        $statusClassMap = ['active' => 'success', 'inactive' => 'secondary', 'maintenance' => 'warning'];
+        $statusLabelMap = ['active' => 'Aktif', 'inactive' => 'Pasif', 'maintenance' => 'Bakımda'];
 
-        return view('blocks.index', compact('blocks', 'sites'));
+        return view('blocks.index', compact('blocks', 'sites','selectedSiteId','statusClassMap','statusLabelMap'));
     }
 
     /**
@@ -63,7 +66,10 @@ class BlockController extends Controller
     public function show(Block $block): View
     {
         $block->load('site');
-        return view('blocks.show', compact('block'));
+        $statusClassMap = ['active' => 'success', 'inactive' => 'secondary', 'maintenance' => 'warning'];
+        $statusLabelMap = ['active' => 'Aktif', 'inactive' => 'Pasif', 'maintenance' => 'Bakımda'];
+        $calculatedTotalFlats = (int) $block->total_floors * (int) $block->flats_per_floor;
+        return view('blocks.show', compact('block','statusClassMap','statusLabelMap','calculatedTotalFlats'));
     }
 
     /**

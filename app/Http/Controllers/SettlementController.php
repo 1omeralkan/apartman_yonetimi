@@ -99,7 +99,11 @@ class SettlementController extends Controller
     public function flat(Flat $flat): View
     {
         $flat->load(['apartment.block.site','residents.user']);
-        return view('settlement.flat', compact('flat'));
+        $statusOptions = ['empty'=>'Boş','occupied'=>'Dolu','maintenance'=>'Bakım','renovation'=>'Tadilat'];
+        $statusClassMap = ['empty' => 'secondary', 'occupied' => 'success', 'maintenance' => 'warning', 'renovation' => 'warning'];
+        $residentTypeMap = ['owner'=>'Ev Sahibi','tenant'=>'Kiracı','family_member'=>'Aile Üyesi','guest'=>'Misafir'];
+        $residentStatusMap = ['active'=>'Aktif','inactive'=>'Pasif'];
+        return view('settlement.flat', compact('flat','statusOptions','statusClassMap','residentTypeMap','residentStatusMap'));
     }
 
     public function unassign(FlatResident $resident)

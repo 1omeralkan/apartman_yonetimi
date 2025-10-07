@@ -98,7 +98,12 @@
         <div class="text-white-50 small my-2 text-uppercase">Operasyon</div>
         <a href="#" class="disabled"><i class="bi bi-cash-coin me-2"></i> Finans</a>
         <a href="#" class="disabled"><i class="bi bi-megaphone me-2"></i> Duyurular</a>
-        <a href="{{ route('settlement.index') }}" class="{{ request()->is('settlement') ? 'active' : '' }}"><i class="bi bi-people me-2"></i> Yerleşim Yönetimi</a>
+        <a href="{{ route('settlement.index') }}" 
+           class="{{ request()->is('settlement*') ? 'active' : '' }}" 
+           @if(request()->is('settlement*')) aria-current="page" @endif
+           title="Daire yerleşimlerini yönet">
+            <i class="bi bi-people me-2"></i> Yerleşim Yönetimi
+        </a>
     </aside>
 
     <main class="flex-grow-1">

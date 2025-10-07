@@ -13,7 +13,8 @@
 
     <div class="card shadow-sm">
         <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
+            <table class="table table-hover align-middle mb-0" aria-label="Siteler tablosu">
+                <caption class="px-3 pt-3 text-muted small">Kayıtlı site listesi. Satıra tıklayarak detay sayfasına gidebilirsiniz.</caption>
                 <thead class="table-light">
                     <tr>
                         <th>Ad</th>
@@ -27,36 +28,50 @@
                 </thead>
                 <tbody>
                     @forelse($sites as $site)
-                        <tr>
-                            <td><a href="{{ route('sites.show', $site) }}" class="text-decoration-none">{{ $site->name }}</a></td>
+                        <tr class="table-row" onclick="window.location='{{ route('sites.show', $site) }}'" style="cursor:pointer;">
+                            <td class="fw-semibold"><a href="{{ route('sites.show', $site) }}" class="text-decoration-none">{{ $site->name }}</a></td>
                             <td><span class="badge bg-secondary">{{ $site->site_code }}</span></td>
                             <td>
-                                @php $map = ['active' => 'success','inactive' => 'secondary','maintenance' => 'warning']; @endphp
-                                <span class="badge bg-{{ $map[$site->status] ?? 'secondary' }}">{{ ucfirst($site->status) }}</span>
+                                <span class="badge bg-{{ $statusClassMap[$site->status] ?? 'secondary' }}">{{ ucfirst($site->status) }}</span>
                             </td>
                             <td>{{ $site->total_blocks }}</td>
                             <td>{{ $site->total_apartments }}</td>
                             <td>{{ $site->total_floors }} / {{ $site->flats_per_floor }}</td>
                             <td class="text-end">
-                                <a href="{{ route('sites.edit', $site) }}" class="btn btn-sm btn-outline-primary">Düzenle</a>
+                                <a href="{{ route('sites.edit', $site) }}" class="btn btn-sm btn-outline-primary" title="Siteyi düzenle"><i class="bi bi-pencil-square me-1"></i>Düzenle</a>
                                 <form action="{{ route('sites.destroy', $site) }}" method="POST" class="d-inline" data-confirm="Siteyi silmek istediğinize emin misiniz? Bu işlem geri alınamaz.">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="btn btn-sm btn-outline-danger">Sil</button>
+                                    <button class="btn btn-sm btn-outline-danger" title="Siteyi sil"><i class="bi bi-trash3 me-1"></i>Sil</button>
                                 </form>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center text-muted py-5">Henüz site eklenmemiş.</td>
+                            <td colspan="7" class="text-center text-muted py-5">
+                                <div class="d-inline-flex flex-column align-items-center gap-2">
+                                    <i class="bi bi-buildings fs-1 text-secondary"></i>
+                                    <div>Henüz site eklenmemiş.</div>
+                                    <a href="{{ route('sites.create') }}" class="btn btn-sm btn-primary"><i class="bi bi-plus-lg me-1"></i>Yeni Site Oluştur</a>
+                                </div>
+                            </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
 
-        <div class="card-footer">
-            {{ $sites->links() }}
+        <div class="card-footer d-flex justify-content-between align-items-center">
+            <div class="text-muted small">
+                @if($sites->total() > 0)
+                    {{ $sites->firstItem() }}–{{ $sites->lastItem() }} / {{ $sites->total() }} kayıt
+                @else
+                    Kayıt bulunamadı
+                @endif
+            </div>
+            <div>
+                {{ $sites->links() }}
+            </div>
         </div>
     </div>
 </div>
