@@ -42,5 +42,7 @@ Route::middleware([
         Route::get('settlement', [SettlementController::class, 'index'])->name('settlement.index');
         Route::get('settlement/block/{block}', [SettlementController::class, 'block'])->name('settlement.block');
         Route::get('settlement/apartment/{apartment}', [SettlementController::class, 'apartment'])->name('settlement.apartment');
+        Route::get('settlement/flat/{flat}/assign', [SettlementController::class, 'assignForm'])->name('settlement.assign.form');
+        Route::post('settlement/flat/{flat}/assign', [SettlementController::class, 'assign'])->name('settlement.assign');
     });
 });

@@ -32,6 +32,13 @@ class Flat extends Model
         return $this->hasMany(FlatResident::class);
     }
 
+    public function scopeWithActiveStatusSynced($query)
+    {
+        return $query->withCount(['residents as active_residents_count' => function($q){
+            $q->where('status','active');
+        }]);
+    }
+
     public function dues()
     {
         return $this->hasMany(Dues::class);

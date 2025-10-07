@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Site;
 use App\Models\Block;
 use App\Models\Apartment;
+use App\Models\Flat;
+use App\Models\FlatResident;
+use App\Models\User;
+use App\Http\Requests\AssignResidentRequest;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -35,7 +39,19 @@ class SettlementController extends Controller
     public function apartment(Apartment $apartment): View
     {
         $apartment->load(['block.site']);
-        $flats = $apartment->flats()->orderBy('flat_number')->get();
+        $flats = $apartment->flats()
+            ->withCount(['residents as active_residents_count' => function($q){ $q->where('status','active'); }])
+            ->orderBy('flat_number')
+            ->get();
+
+        // Dinamik durum senkronizasyonu: aktif sakin yoksa empty, varsa occupied
+        foreach ($flats as $flat) {
+            $desiredStatus = $flat->active_residents_count > 0 ? 'occupied' : 'empty';
+            if ($flat->status !== $desiredStatus) {
+                $flat->status = $desiredStatus;
+                $flat->save();
+            }
+        }
         // Katlara göre gruplama (1..N)
         $flatsByFloor = $flats->groupBy('floor_number')->sortKeys();
         return view('settlement.apartment', [
@@ -43,6 +59,41 @@ class SettlementController extends Controller
             'flatsByFloor' => $flatsByFloor,
             'flatsPerFloor' => max(1, (int)$apartment->flats_per_floor),
         ]);
+    }
+
+    public function assignForm(Flat $flat): View
+    {
+        $users = User::orderBy('first_name')->get(['id','first_name','last_name','email']);
+        return view('settlement.assign', compact('flat','users'));
+    }
+
+    public function assign(AssignResidentRequest $request, Flat $flat)
+    {
+        $data = $request->validated();
+        // Güvenlik: aynı kullanıcı başka dairede aktif mi?
+        $exists = FlatResident::where('user_id', $data['user_id'])
+            ->where('status', 'active')
+            ->exists();
+        if ($exists) {
+            return back()->withErrors(['user_id' => 'Bu kullanıcı zaten bir daireye atanmış.'])->withInput();
+        }
+
+        FlatResident::create([
+            'flat_id' => $flat->id,
+            'user_id' => $data['user_id'],
+            'resident_type' => $data['resident_type'],
+            'rent_amount' => $data['rent_amount'] ?? null,
+            'move_in_date' => $data['move_in_date'],
+            'move_out_date' => $data['move_out_date'] ?? null,
+            'status' => $data['status'],
+            'notes' => $data['notes'] ?? null,
+        ]);
+
+        // Dairenin durumunu occupied yap
+        $flat->status = 'occupied';
+        $flat->save();
+
+        return redirect()->route('settlement.apartment', $flat->apartment_id)->with('success','Sakin atandı.');
     }
 }
 

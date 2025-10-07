@@ -29,6 +29,9 @@
                                     <div class="small mt-1">
                                         <span class="badge {{ $flat->status==='empty' ? 'text-bg-secondary' : ($flat->status==='occupied' ? 'text-bg-success' : 'text-bg-warning') }}">{{ $flat->status }}</span>
                                     </div>
+                                    <div class="mt-2">
+                                        <a href="{{ route('settlement.assign.form', $flat) }}" class="btn btn-sm btn-outline-primary w-100">Sakin Ata</a>
+                                    </div>
                                 </div>
                             </div>
                         @endforeach
