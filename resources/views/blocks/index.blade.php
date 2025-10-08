@@ -40,9 +40,10 @@
                 <tr>
                     <th>Ad</th>
                     <th>Site</th>
-                    <th>Apartman (Toplam)</th>
+                    <th>Toplam Apartman</th>
                     <th>Toplam Kat</th>
-                    <th>Kat/Daire</th>
+                    <th>Kat Başına Daire</th>
+                    <th>Toplam Daire</th>
                     <th>Durum</th>
                     <th>Oluşturulma</th>
                     <th class="text-end">İşlemler</th>
@@ -61,22 +62,23 @@
                         <td>{{ number_format($block->total_apartments) }}</td>
                         <td>{{ number_format($block->total_floors) }}</td>
                         <td>{{ number_format($block->flats_per_floor) }}</td>
+                        <td>{{ number_format((int) $block->total_floors * (int) $block->flats_per_floor) }}</td>
                         <td>
                             <span class="badge text-bg-{{ $statusClassMap[$block->status] ?? 'secondary' }}">{{ $statusLabelMap[$block->status] ?? ucfirst($block->status) }}</span>
                         </td>
                         <td>{{ $block->created_at?->format('d.m.Y') }}</td>
                         <td class="text-end">
-                            <a href="{{ route('blocks.edit', $block) }}" class="btn btn-sm btn-outline-secondary" title="Bloku düzenle"><i class="bi bi-pencil-square me-1"></i>Düzenle</a>
-                            <form action="{{ route('blocks.destroy', $block) }}" method="POST" class="d-inline" data-confirm="Bloku silmek istediğinize emin misiniz? Bu işlem geri alınamaz.">
+                            <a href="{{ route('blocks.edit', $block) }}" class="btn btn-sm btn-outline-secondary" title="Bloku düzenle" onclick="event.stopPropagation();"><i class="bi bi-pencil-square me-1"></i>Düzenle</a>
+                            <form action="{{ route('blocks.destroy', $block) }}" method="POST" class="d-inline" data-confirm="Bloku silmek istediğinize emin misiniz? Bu işlem geri alınamaz." onclick="event.stopPropagation();">
                                 @csrf
                                 @method('DELETE')
-                                <button class="btn btn-sm btn-outline-danger" title="Bloku sil"><i class="bi bi-trash3 me-1"></i>Sil</button>
+                                <button class="btn btn-sm btn-outline-danger" title="Bloku sil" onclick="event.stopPropagation();"><i class="bi bi-trash3 me-1"></i>Sil</button>
                             </form>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="text-center text-muted py-5">
+                        <td colspan="9" class="text-center text-muted py-5">
                             <div class="d-inline-flex flex-column align-items-center gap-2">
                                 <i class="bi bi-diagram-3 fs-1 text-secondary"></i>
                                 <div>Kayıt bulunamadı.</div>

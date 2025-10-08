@@ -91,6 +91,9 @@
     <aside class="sidebar p-3 d-none d-md-block">
         <div class="brand mb-3">Yönetim Paneli</div>
         <div class="text-white-50 small mb-2 text-uppercase">Genel</div>
+        @role('super_admin')
+        <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}" title="Süper yönetici paneli"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+        @endrole
         <a href="{{ route('sites.index') }}" class="{{ request()->is('sites*') ? 'active' : '' }}"><i class="bi bi-buildings me-2"></i> Siteler</a>
         <a href="{{ route('blocks.index') }}" class="{{ request()->is('blocks*') ? 'active' : '' }}"><i class="bi bi-diagram-3 me-2"></i> Bloklar</a>
         <a href="{{ route('apartments.index') }}" class="{{ request()->is('apartments*') ? 'active' : '' }}"><i class="bi bi-houses me-2"></i> Apartmanlar</a>

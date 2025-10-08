@@ -47,6 +47,7 @@
                     <th>Blok</th>
                     <th>Durum</th>
                     <th>Kat</th>
+                    <th>Kat Başına Daire</th>
                     <th>Toplam Daire</th>
                     <th class="text-end">İşlemler</th>
                 </tr>
@@ -61,19 +62,20 @@
                             <span class="badge text-bg-{{ $statusClassMap[$apartment->status] ?? 'secondary' }}">{{ $statusLabelMap[$apartment->status] ?? ucfirst($apartment->status) }}</span>
                         </td>
                         <td>{{ number_format($apartment->total_floors) }}</td>
+                        <td>{{ number_format($apartment->flats_per_floor) }}</td>
                         <td>{{ number_format($apartment->total_flats) }}</td>
                         <td class="text-end">
-                            <a href="{{ route('apartments.edit', $apartment) }}" class="btn btn-sm btn-outline-secondary" title="Apartmanı düzenle"><i class="bi bi-pencil-square me-1"></i>Düzenle</a>
-                            <form action="{{ route('apartments.destroy', $apartment) }}" method="POST" class="d-inline" data-confirm="Apartmanı silmek istediğinize emin misiniz? İlgili daireler etkilenebilir.">
+                            <a href="{{ route('apartments.edit', $apartment) }}" class="btn btn-sm btn-outline-secondary" title="Apartmanı düzenle" onclick="event.stopPropagation();"><i class="bi bi-pencil-square me-1"></i>Düzenle</a>
+                            <form action="{{ route('apartments.destroy', $apartment) }}" method="POST" class="d-inline" data-confirm="Apartmanı silmek istediğinize emin misiniz? İlgili daireler etkilenebilir." onclick="event.stopPropagation();">
                                 @csrf
                                 @method('DELETE')
-                                <button class="btn btn-sm btn-outline-danger" title="Apartmanı sil"><i class="bi bi-trash3 me-1"></i>Sil</button>
+                                <button class="btn btn-sm btn-outline-danger" title="Apartmanı sil" onclick="event.stopPropagation();"><i class="bi bi-trash3 me-1"></i>Sil</button>
                             </form>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="text-center text-muted py-5">
+                        <td colspan="8" class="text-center text-muted py-5">
                             <div class="d-inline-flex flex-column align-items-center gap-2">
                                 <i class="bi bi-houses fs-1 text-secondary"></i>
                                 <div>Kayıt bulunamadı.</div>

@@ -22,7 +22,9 @@
                         <th>Durum</th>
                         <th>Blok</th>
                         <th>Apartman</th>
-                        <th>Kat/Daire</th>
+                        <th>Toplam Kat</th>
+                        <th>Kat Başına Daire</th>
+                        <th>Toplam Daire</th>
                         <th class="text-end">İşlemler</th>
                     </tr>
                 </thead>
@@ -36,19 +38,21 @@
                             </td>
                             <td>{{ $site->total_blocks }}</td>
                             <td>{{ $site->total_apartments }}</td>
-                            <td>{{ $site->total_floors }} / {{ $site->flats_per_floor }}</td>
+                            <td>{{ $site->total_floors }}</td>
+                            <td>{{ $site->flats_per_floor }}</td>
+                            <td>{{ number_format((int) $site->total_floors * (int) $site->flats_per_floor) }}</td>
                             <td class="text-end">
-                                <a href="{{ route('sites.edit', $site) }}" class="btn btn-sm btn-outline-primary" title="Siteyi düzenle"><i class="bi bi-pencil-square me-1"></i>Düzenle</a>
-                                <form action="{{ route('sites.destroy', $site) }}" method="POST" class="d-inline" data-confirm="Siteyi silmek istediğinize emin misiniz? Bu işlem geri alınamaz.">
+                                <a href="{{ route('sites.edit', $site) }}" class="btn btn-sm btn-outline-primary" title="Siteyi düzenle" onclick="event.stopPropagation();"><i class="bi bi-pencil-square me-1"></i>Düzenle</a>
+                                <form action="{{ route('sites.destroy', $site) }}" method="POST" class="d-inline" data-confirm="Siteyi silmek istediğinize emin misiniz? Bu işlem geri alınamaz." onclick="event.stopPropagation();">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="btn btn-sm btn-outline-danger" title="Siteyi sil"><i class="bi bi-trash3 me-1"></i>Sil</button>
+                                    <button class="btn btn-sm btn-outline-danger" title="Siteyi sil" onclick="event.stopPropagation();"><i class="bi bi-trash3 me-1"></i>Sil</button>
                                 </form>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center text-muted py-5">
+                            <td colspan="9" class="text-center text-muted py-5">
                                 <div class="d-inline-flex flex-column align-items-center gap-2">
                                     <i class="bi bi-buildings fs-1 text-secondary"></i>
                                     <div>Henüz site eklenmemiş.</div>

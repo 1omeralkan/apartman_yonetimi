@@ -113,13 +113,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-4">
-                    <label class="form-label">Varsayılan Kullanım Alanı (m²)</label>
-                    <div class="input-group">
-                        <input type="number" step="0.01" min="0" name="area" value="{{ old('area', $flatDefaults['area'] ?? null) }}" class="form-control">
-                        <span class="input-group-text">m²</span>
-                    </div>
-                </div>
+                
 
                 <div class="col-md-2">
                     <label class="form-label">Asansör</label>

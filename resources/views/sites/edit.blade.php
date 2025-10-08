@@ -64,7 +64,7 @@
                     @error('total_floors')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
                 <div class="col-md-2">
-                    <label class="form-label">Kat/Daire</label>
+                    <label class="form-label">Kat Başına Daire</label>
                     <input type="number" name="flats_per_floor" value="{{ old('flats_per_floor', $site->flats_per_floor) }}" class="form-control @error('flats_per_floor') is-invalid @enderror">
                     @error('flats_per_floor')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>

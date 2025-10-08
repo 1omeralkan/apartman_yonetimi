@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\BlockController;
 use App\Http\Controllers\ApartmentController;
@@ -30,9 +31,9 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
+    Route::middleware(['role:super_admin'])->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    });
 
     // Site yönetimi (admin, site_manager, super_admin)
     Route::middleware(['role:admin,site_manager,super_admin'])->group(function () {
