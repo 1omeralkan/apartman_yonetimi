@@ -40,16 +40,7 @@
                     @error('status')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
 
-                <div class="col-md-2">
-                    <label class="form-label">Apartman (Toplam)</label>
-                    <input type="number" name="total_apartments" value="{{ old('total_apartments', $block->total_apartments) }}" class="form-control @error('total_apartments') is-invalid @enderror">
-                    @error('total_apartments')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">Toplam Kat</label>
-                    <input type="number" name="total_floors" value="{{ old('total_floors', $block->total_floors) }}" class="form-control @error('total_floors') is-invalid @enderror">
-                    @error('total_floors')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                </div>
+                
                 <div class="col-md-2">
                     <label class="form-label">Kat Başına Daire</label>
                     <input type="number" name="flats_per_floor" value="{{ old('flats_per_floor', $block->flats_per_floor) }}" class="form-control @error('flats_per_floor') is-invalid @enderror">

@@ -28,8 +28,8 @@ class SiteStoreRequest extends FormRequest
             'status' => ['required','in:active,inactive,maintenance'],
             'site_code' => ['required','string','max:50','unique:sites,site_code'],
             'total_blocks' => ['required','integer','min:0'],
-            'total_apartments' => ['required','integer','min:0'],
-            'total_floors' => ['required','integer','min:0'],
+            'apartments_per_block' => ['required','integer','min:0'],
+            'floors_per_apartment' => ['required','integer','min:0'],
             'flats_per_floor' => ['required','integer','min:0'],
         ];
     }

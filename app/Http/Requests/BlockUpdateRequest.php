@@ -30,8 +30,6 @@ class BlockUpdateRequest extends FormRequest
             'site_id' => ['required', 'integer', 'exists:sites,id'],
             'name' => ['required', 'string', 'max:255', 'unique:blocks,name,' . $blockId . ',id,site_id,' . $siteId],
             'status' => ['required', 'in:active,inactive,maintenance'],
-            'total_apartments' => ['required', 'integer', 'min:0'],
-            'total_floors' => ['required', 'integer', 'min:0'],
             'flats_per_floor' => ['required', 'integer', 'min:0'],
         ];
     }

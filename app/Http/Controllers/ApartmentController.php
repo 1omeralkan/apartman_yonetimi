@@ -47,12 +47,15 @@ class ApartmentController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
+        $selectedSiteId = $request->integer('site_id');
         $sites = Site::orderBy('name')->get(['id','name']);
-        $blocks = Block::orderBy('name')->get(['id','name','site_id']);
+        $blocks = $selectedSiteId
+            ? Block::where('site_id', $selectedSiteId)->orderBy('name')->get(['id','name','site_id'])
+            : collect();
         $flatTypes = ['1+0','1+1','2+1','3+1','4+1','5+1'];
-        return view('apartments.create', compact('sites','blocks','flatTypes'));
+        return view('apartments.create', compact('sites','blocks','flatTypes','selectedSiteId'));
     }
 
     /**
@@ -61,7 +64,14 @@ class ApartmentController extends Controller
     public function store(ApartmentStoreRequest $request): RedirectResponse
     {
         $data = $request->validated();
-        // total_flats'ı otomatik hesapla
+        // total_floors ve total_flats'ı otomatik hesapla
+        $data['total_floors'] = max(0, (int) ($data['total_floors'] ?? 0));
+        // Eğer total_floors gönderilmediyse blok/site yapılandırmasından türet
+        if (empty($data['total_floors'])) {
+            $site = Site::findOrFail($data['site_id']);
+            // Apartman başına kat site üzerinden gelir
+            $data['total_floors'] = max(0, (int)$site->floors_per_apartment);
+        }
         $data['total_flats'] = max(0, (int)$data['total_floors'] * (int)$data['flats_per_floor']);
         $apartment = Apartment::create($data);
 
@@ -143,7 +153,11 @@ class ApartmentController extends Controller
         // Eski flats_per_floor değerini sakla (kat numarası yeniden hesaplamak için)
         $oldFlatsPerFloor = (int) $apartment->flats_per_floor;
 
-        // total_flats'ı otomatik hesapla
+        // total_floors ve total_flats'ı otomatik hesapla
+        if (empty($data['total_floors'])) {
+            $site = Site::findOrFail($data['site_id']);
+            $data['total_floors'] = max(0, (int) $site->floors_per_apartment);
+        }
         $data['total_flats'] = max(0, (int)$data['total_floors'] * (int)$data['flats_per_floor']);
         $apartment->update($data);
         $apartment->refresh();

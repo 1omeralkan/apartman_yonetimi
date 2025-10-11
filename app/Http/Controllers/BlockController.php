@@ -37,7 +37,7 @@ class BlockController extends Controller
      */
     public function create(): View
     {
-        $sites = Site::orderBy('name')->get(['id','name']);
+        $sites = Site::orderBy('name')->get(['id','name','apartments_per_block','floors_per_apartment']);
         return view('blocks.create', compact('sites'));
     }
 
@@ -47,6 +47,10 @@ class BlockController extends Controller
     public function store(BlockStoreRequest $request): RedirectResponse
     {
         $data = $request->validated();
+        // Site'ten türeyen alanlar
+        $site = Site::findOrFail($data['site_id']);
+        $data['total_apartments'] = max(0, (int)$site->apartments_per_block);
+        $data['total_floors'] = max(0, (int)$data['total_apartments'] * (int)$site->floors_per_apartment);
         Block::create($data);
         return redirect()->route('blocks.index')->with('success', 'Blok başarıyla oluşturuldu.');
     }
@@ -56,7 +60,7 @@ class BlockController extends Controller
      */
     public function edit(Block $block): View
     {
-        $sites = Site::orderBy('name')->get(['id','name']);
+        $sites = Site::orderBy('name')->get(['id','name','apartments_per_block','floors_per_apartment']);
         return view('blocks.edit', compact('block', 'sites'));
     }
 
@@ -78,6 +82,9 @@ class BlockController extends Controller
     public function update(BlockUpdateRequest $request, Block $block): RedirectResponse
     {
         $data = $request->validated();
+        $site = Site::findOrFail($data['site_id']);
+        $data['total_apartments'] = max(0, (int)$site->apartments_per_block);
+        $data['total_floors'] = max(0, (int)$data['total_apartments'] * (int)$site->floors_per_apartment);
         $block->update($data);
         return redirect()->route('blocks.index')->with('success', 'Blok güncellendi.');
     }
@@ -89,6 +96,15 @@ class BlockController extends Controller
     {
         $block->delete();
         return redirect()->route('blocks.index')->with('success', 'Blok silindi.');
+    }
+
+    /**
+     * JSON: Return blocks for a given site id
+     */
+    public function bySite(Request $request, int $siteId)
+    {
+        $blocks = Block::where('site_id', $siteId)->orderBy('name')->get(['id','name']);
+        return response()->json($blocks);
     }
 }
 

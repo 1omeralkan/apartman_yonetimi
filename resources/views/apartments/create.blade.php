@@ -14,10 +14,10 @@
 
                 <div class="col-md-6">
                     <label class="form-label">Site</label>
-                    <select name="site_id" class="form-select @error('site_id') is-invalid @enderror">
+                    <select name="site_id" class="form-select @error('site_id') is-invalid @enderror" onchange="window.fillBlocksForSite(this.value)">
                         <option value="">Seçiniz</option>
                         @foreach($sites as $site)
-                            <option value="{{ $site->id }}" {{ old('site_id') == $site->id ? 'selected' : '' }}>{{ $site->name }}</option>
+                            <option value="{{ $site->id }}" {{ (string)old('site_id', $selectedSiteId ?? '') === (string)$site->id ? 'selected' : '' }}>{{ $site->name }}</option>
                         @endforeach
                     </select>
                     @error('site_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
@@ -25,10 +25,10 @@
 
                 <div class="col-md-6">
                     <label class="form-label">Blok</label>
-                    <select name="block_id" class="form-select @error('block_id') is-invalid @enderror">
-                        <option value="">Seçiniz</option>
+                    <select name="block_id" class="form-select @error('block_id') is-invalid @enderror" id="block-select">
+                        <option value="">Önce site seçiniz</option>
                         @foreach($blocks as $block)
-                            <option value="{{ $block->id }}" {{ old('block_id') == $block->id ? 'selected' : '' }}>{{ $block->name }}</option>
+                            <option value="{{ $block->id }}" {{ (string)old('block_id') === (string)$block->id ? 'selected' : '' }}>{{ $block->name }}</option>
                         @endforeach
                     </select>
                     @error('block_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
@@ -56,11 +56,7 @@
                     @error('status')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
 
-                <div class="col-md-2">
-                    <label class="form-label">Toplam Kat</label>
-                    <input type="number" name="total_floors" value="{{ old('total_floors',0) }}" class="form-control @error('total_floors') is-invalid @enderror">
-                    @error('total_floors')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                </div>
+                
                 <div class="col-md-2">
                     <label class="form-label">Kat Başına Daire</label>
                     <input type="number" name="flats_per_floor" value="{{ old('flats_per_floor',0) }}" class="form-control @error('flats_per_floor') is-invalid @enderror">
@@ -140,3 +136,24 @@
 @endsection
 
 
+@push('scripts')
+<script>
+window.fillBlocksForSite = async function(siteId){
+    const select = document.getElementById('block-select');
+    select.innerHTML = '<option value="">Yükleniyor...</option>';
+    if(!siteId){
+        select.innerHTML = '<option value="">Önce site seçiniz</option>';
+        return;
+    }
+    try{
+        const res = await fetch('{{ url('api/sites') }}/' + siteId + '/blocks', {headers:{'X-Requested-With':'XMLHttpRequest'}});
+        const data = await res.json();
+        let options = '<option value="">Seçiniz</option>';
+        data.forEach(b=>{ options += `<option value="${b.id}">${b.name}</option>`; });
+        select.innerHTML = options;
+    }catch(e){
+        select.innerHTML = '<option value="">Bloklar yüklenemedi</option>';
+    }
+}
+</script>
+@endpush

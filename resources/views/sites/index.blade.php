@@ -22,6 +22,8 @@
                         <th>Durum</th>
                         <th>Blok</th>
                         <th>Apartman</th>
+                        <th>Blok Başına Apartman</th>
+                        <th>Apartman Başına Kat</th>
                         <th>Toplam Kat</th>
                         <th>Kat Başına Daire</th>
                         <th>Toplam Daire</th>
@@ -38,6 +40,8 @@
                             </td>
                             <td>{{ $site->total_blocks }}</td>
                             <td>{{ $site->total_apartments }}</td>
+                            <td>{{ $site->apartments_per_block }}</td>
+                            <td>{{ $site->floors_per_apartment }}</td>
                             <td>{{ $site->total_floors }}</td>
                             <td>{{ $site->flats_per_floor }}</td>
                             <td>{{ number_format((int) $site->total_floors * (int) $site->flats_per_floor) }}</td>
@@ -52,7 +56,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="text-center text-muted py-5">
+                            <td colspan="11" class="text-center text-muted py-5">
                                 <div class="d-inline-flex flex-column align-items-center gap-2">
                                     <i class="bi bi-buildings fs-1 text-secondary"></i>
                                     <div>Henüz site eklenmemiş.</div>

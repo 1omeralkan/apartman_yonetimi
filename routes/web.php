@@ -7,6 +7,8 @@ use App\Http\Controllers\BlockController;
 use App\Http\Controllers\ApartmentController;
 use App\Http\Controllers\SettlementController;
 use App\Http\Controllers\FlatsController;
+use App\Http\Controllers\ResidentController;
+use App\Http\Controllers\AccountController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +33,9 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
+    
+    // Hesabım (her giriş yapmış kullanıcı)
+    Route::get('/account/profile', [AccountController::class, 'profile'])->name('account.profile');
     Route::middleware(['role:super_admin'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     });
@@ -40,6 +45,7 @@ Route::middleware([
         Route::resource('sites', SiteController::class);
         Route::resource('blocks', BlockController::class);
         Route::resource('sites.blocks', BlockController::class);
+        Route::get('api/sites/{site}/blocks', [BlockController::class, 'bySite'])->name('api.blocks.bySite');
         Route::resource('apartments', ApartmentController::class);
         Route::get('flats', [FlatsController::class, 'index'])->name('flats.index');
         Route::get('settlement', [SettlementController::class, 'index'])->name('settlement.index');
@@ -49,5 +55,14 @@ Route::middleware([
         Route::get('settlement/flat/{flat}/assign', [SettlementController::class, 'assignForm'])->name('settlement.assign.form');
         Route::post('settlement/flat/{flat}/assign', [SettlementController::class, 'assign'])->name('settlement.assign');
         Route::delete('settlement/resident/{resident}', [SettlementController::class, 'unassign'])->name('settlement.unassign');
+    });
+
+    // Resident
+    Route::middleware(['role:resident'])->group(function () {
+        Route::get('/resident', [ResidentController::class, 'home'])->name('resident.home');
+        Route::get('/resident/dues', [ResidentController::class, 'dues'])->name('resident.dues');
+        Route::get('/resident/complaints', [ResidentController::class, 'complaints'])->name('resident.complaints');
+        Route::get('/resident/documents', [ResidentController::class, 'documents'])->name('resident.documents');
+        Route::get('/resident/announcements', [ResidentController::class, 'announcements'])->name('resident.announcements');
     });
 });

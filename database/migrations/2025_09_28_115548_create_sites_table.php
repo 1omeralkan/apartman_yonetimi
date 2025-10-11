@@ -20,7 +20,10 @@ return new class extends Migration
             $table->unsignedInteger('total_blocks')->default(0);
             $table->unsignedInteger('total_apartments')->default(0);
             $table->unsignedInteger('total_floors')->default(0);
-            $table->unsignedInteger('flats_per_floor')->default(0);
+            // Yoğunluk alanları
+            $table->unsignedInteger('apartments_per_block')->default(0); // Blok başına apartman
+            $table->unsignedInteger('floors_per_apartment')->default(0); // Apartman başına kat
+            $table->unsignedInteger('flats_per_floor')->default(0); // Kat başına daire
             $table->string('site_code', 50)->unique();
             $table->softDeletes();
             $table->timestamps();

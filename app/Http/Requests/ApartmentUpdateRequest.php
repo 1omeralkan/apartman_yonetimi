@@ -32,7 +32,7 @@ class ApartmentUpdateRequest extends FormRequest
             'name' => ['required','string','max:255','unique:apartments,name,'.$apartmentId.',id,block_id,'.$blockId],
             'address' => ['required','string'],
             'status' => ['required','in:active,inactive,maintenance'],
-            'total_floors' => ['required','integer','min:0'],
+            // total_floors türetilecek
             'total_flats' => ['nullable','integer','min:0'],
             'flats_per_floor' => ['required','integer','min:0'],
             'has_elevator' => ['required','boolean'],

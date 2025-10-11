@@ -53,15 +53,16 @@
                     <input type="number" name="total_blocks" value="{{ old('total_blocks', $site->total_blocks) }}" class="form-control @error('total_blocks') is-invalid @enderror">
                     @error('total_blocks')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
+                
                 <div class="col-md-2">
-                    <label class="form-label">Apartman</label>
-                    <input type="number" name="total_apartments" value="{{ old('total_apartments', $site->total_apartments) }}" class="form-control @error('total_apartments') is-invalid @enderror">
-                    @error('total_apartments')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    <label class="form-label">Blok Başına Apartman</label>
+                    <input type="number" name="apartments_per_block" value="{{ old('apartments_per_block', $site->apartments_per_block) }}" class="form-control @error('apartments_per_block') is-invalid @enderror">
+                    @error('apartments_per_block')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
                 <div class="col-md-2">
-                    <label class="form-label">Toplam Kat</label>
-                    <input type="number" name="total_floors" value="{{ old('total_floors', $site->total_floors) }}" class="form-control @error('total_floors') is-invalid @enderror">
-                    @error('total_floors')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    <label class="form-label">Apartman Başına Kat</label>
+                    <input type="number" name="floors_per_apartment" value="{{ old('floors_per_apartment', $site->floors_per_apartment) }}" class="form-control @error('floors_per_apartment') is-invalid @enderror">
+                    @error('floors_per_apartment')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">Kat Başına Daire</label>

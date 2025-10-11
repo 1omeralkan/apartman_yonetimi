@@ -71,7 +71,7 @@
                         <span class="small text-muted">{{ auth()->user()->first_name ?? auth()->user()->name }}</span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm">
-                        <li><a class="dropdown-item" href="{{ route('profile.show') }}"><i class="bi bi-person me-2"></i>Profil</a></li>
+                        <li><a class="dropdown-item" href="{{ route('account.profile') }}"><i class="bi bi-person me-2"></i>Profil</a></li>
                         <li><a class="dropdown-item" href="{{ route('dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
@@ -89,24 +89,39 @@
 
 <div class="d-flex">
     <aside class="sidebar p-3 d-none d-md-block">
-        <div class="brand mb-3">Yönetim Paneli</div>
-        <div class="text-white-50 small mb-2 text-uppercase">Genel</div>
-        @role('super_admin')
-        <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}" title="Süper yönetici paneli"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+        @hasanyrole('admin|site_manager|super_admin')
+            <div class="brand mb-3">Yönetim Paneli</div>
+            <div class="text-white-50 small mb-2 text-uppercase">Genel</div>
+        @else
+            @role('resident')
+                <div class="brand mb-3">Sakin Paneli</div>
+            @endrole
+        @endhasanyrole
+        @hasanyrole('admin|site_manager|super_admin')
+            @role('super_admin')
+            <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}" title="Süper yönetici paneli"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+            @endrole
+            <a href="{{ route('sites.index') }}" class="{{ request()->is('sites*') ? 'active' : '' }}"><i class="bi bi-buildings me-2"></i> Siteler</a>
+            <a href="{{ route('blocks.index') }}" class="{{ request()->is('blocks*') ? 'active' : '' }}"><i class="bi bi-diagram-3 me-2"></i> Bloklar</a>
+            <a href="{{ route('apartments.index') }}" class="{{ request()->is('apartments*') ? 'active' : '' }}"><i class="bi bi-houses me-2"></i> Apartmanlar</a>
+            <a href="{{ route('flats.index') }}" class="{{ request()->is('flats*') ? 'active' : '' }}"><i class="bi bi-door-open me-2"></i> Daireler</a>
+            <div class="text-white-50 small my-2 text-uppercase">Operasyon</div>
+            <a href="#" class="disabled"><i class="bi bi-cash-coin me-2"></i> Finans</a>
+            <a href="#" class="disabled"><i class="bi bi-megaphone me-2"></i> Duyurular</a>
+            <a href="{{ route('settlement.index') }}" 
+               class="{{ request()->is('settlement*') ? 'active' : '' }}" 
+               @if(request()->is('settlement*')) aria-current="page" @endif
+               title="Daire yerleşimlerini yönet">
+                <i class="bi bi-people me-2"></i> Yerleşim Yönetimi
+            </a>
+        @endhasanyrole
+        @role('resident')
+        <a href="{{ route('resident.home') }}" class="{{ request()->routeIs('resident.home') ? 'active' : '' }}"><i class="bi bi-house-heart me-2"></i>Dashboard</a>
+        <a href="{{ route('resident.dues') }}" class="{{ request()->routeIs('resident.dues') ? 'active' : '' }}"><i class="bi bi-receipt me-2"></i> Aidatlar ve Ödemeler</a>
+        <a href="{{ route('resident.documents') }}" class="{{ request()->routeIs('resident.documents') ? 'active' : '' }}"><i class="bi bi-folder2 me-2"></i> Belgeler</a>
+        <a href="{{ route('resident.complaints') }}" class="{{ request()->routeIs('resident.complaints') ? 'active' : '' }}"><i class="bi bi-chat-dots me-2"></i> Başvurular/Şikayetlerim</a>
+        <a href="{{ route('resident.announcements') }}" class="{{ request()->routeIs('resident.announcements') ? 'active' : '' }}"><i class="bi bi-megaphone me-2"></i> Duyurularım</a>
         @endrole
-        <a href="{{ route('sites.index') }}" class="{{ request()->is('sites*') ? 'active' : '' }}"><i class="bi bi-buildings me-2"></i> Siteler</a>
-        <a href="{{ route('blocks.index') }}" class="{{ request()->is('blocks*') ? 'active' : '' }}"><i class="bi bi-diagram-3 me-2"></i> Bloklar</a>
-        <a href="{{ route('apartments.index') }}" class="{{ request()->is('apartments*') ? 'active' : '' }}"><i class="bi bi-houses me-2"></i> Apartmanlar</a>
-        <a href="{{ route('flats.index') }}" class="{{ request()->is('flats*') ? 'active' : '' }}"><i class="bi bi-door-open me-2"></i> Daireler</a>
-        <div class="text-white-50 small my-2 text-uppercase">Operasyon</div>
-        <a href="#" class="disabled"><i class="bi bi-cash-coin me-2"></i> Finans</a>
-        <a href="#" class="disabled"><i class="bi bi-megaphone me-2"></i> Duyurular</a>
-        <a href="{{ route('settlement.index') }}" 
-           class="{{ request()->is('settlement*') ? 'active' : '' }}" 
-           @if(request()->is('settlement*')) aria-current="page" @endif
-           title="Daire yerleşimlerini yönet">
-            <i class="bi bi-people me-2"></i> Yerleşim Yönetimi
-        </a>
     </aside>
 
     <main class="flex-grow-1">
@@ -178,7 +193,8 @@
         const alerts = document.querySelectorAll('.alert');
         setTimeout(() => alerts.forEach(a => new bootstrap.Alert(a).close()), 3500);
     });
-</script>
+    </script>
+@stack('scripts')
 </body>
 </html>
 

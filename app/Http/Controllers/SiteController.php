@@ -35,6 +35,9 @@ class SiteController extends Controller
     public function store(SiteStoreRequest $request): RedirectResponse
     {
         $data = $request->validated();
+        // Türetilen alanları hesapla
+        $data['total_apartments'] = max(0, (int)$data['total_blocks'] * (int)$data['apartments_per_block']);
+        $data['total_floors'] = max(0, (int)$data['total_apartments'] * (int)$data['floors_per_apartment']);
         Site::create($data);
         return redirect()->route('sites.index')->with('success', 'Site başarıyla oluşturuldu.');
     }
@@ -62,6 +65,9 @@ class SiteController extends Controller
     public function update(SiteUpdateRequest $request, Site $site): RedirectResponse
     {
         $data = $request->validated();
+        // Türetilen alanları hesapla
+        $data['total_apartments'] = max(0, (int)$data['total_blocks'] * (int)$data['apartments_per_block']);
+        $data['total_floors'] = max(0, (int)$data['total_apartments'] * (int)$data['floors_per_apartment']);
         $site->update($data);
         return redirect()->route('sites.index')->with('success', 'Site güncellendi.');
     }

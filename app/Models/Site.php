@@ -16,6 +16,8 @@ class Site extends Model
         'total_blocks' => 'integer',
         'total_apartments' => 'integer',
         'total_floors' => 'integer',
+        'apartments_per_block' => 'integer',
+        'floors_per_apartment' => 'integer',
         'flats_per_floor' => 'integer',
     ];
 

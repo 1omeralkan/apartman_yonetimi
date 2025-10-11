@@ -20,6 +20,7 @@
                             <option value="{{ $site->id }}" {{ old('site_id') == $site->id ? 'selected' : '' }}>{{ $site->name }}</option>
                         @endforeach
                     </select>
+                    <div class="form-text">Seçilen sitedeki "blok başına apartman" ve "apartman başına kat" değerlerinden toplamlar otomatik hesaplanır.</div>
                     @error('site_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
 
@@ -39,16 +40,6 @@
                     @error('status')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
 
-                <div class="col-md-2">
-                    <label class="form-label">Apartman (Toplam)</label>
-                    <input type="number" name="total_apartments" value="{{ old('total_apartments',0) }}" class="form-control @error('total_apartments') is-invalid @enderror">
-                    @error('total_apartments')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">Toplam Kat</label>
-                    <input type="number" name="total_floors" value="{{ old('total_floors',0) }}" class="form-control @error('total_floors') is-invalid @enderror">
-                    @error('total_floors')<div class="invalid-feedback">{{ $message }}</div>@enderror
-                </div>
                 <div class="col-md-2">
                     <label class="form-label">Kat Başına Daire</label>
                     <input type="number" name="flats_per_floor" value="{{ old('flats_per_floor',0) }}" class="form-control @error('flats_per_floor') is-invalid @enderror">
