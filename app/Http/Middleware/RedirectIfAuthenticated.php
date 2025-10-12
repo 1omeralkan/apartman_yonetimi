@@ -21,6 +21,17 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
+                $user = Auth::guard($guard)->user();
+                
+                // Rol bazlı yönlendirme
+                if ($user->hasRole('super_admin')) {
+                    return redirect()->route('dashboard');
+                } elseif ($user->hasRole(['admin', 'site_manager'])) {
+                    return redirect()->route('sites.index');
+                } elseif ($user->hasRole('resident')) {
+                    return redirect()->route('resident.home');
+                }
+                
                 return redirect(RouteServiceProvider::HOME);
             }
         }

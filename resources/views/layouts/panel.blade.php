@@ -101,10 +101,20 @@
             @role('super_admin')
             <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}" title="Süper yönetici paneli"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
             @endrole
+            <div class="text-white-50 small my-2 text-uppercase">Kullanıcı Yönetimi</div>
+            @role('super_admin')
+            <a href="{{ route('users.index') }}" class="{{ request()->is('users*') ? 'active' : '' }}"><i class="bi bi-people me-2"></i> Kullanıcılar</a>
+            @endrole
             <a href="{{ route('sites.index') }}" class="{{ request()->is('sites*') ? 'active' : '' }}"><i class="bi bi-buildings me-2"></i> Siteler</a>
             <a href="{{ route('blocks.index') }}" class="{{ request()->is('blocks*') ? 'active' : '' }}"><i class="bi bi-diagram-3 me-2"></i> Bloklar</a>
             <a href="{{ route('apartments.index') }}" class="{{ request()->is('apartments*') ? 'active' : '' }}"><i class="bi bi-houses me-2"></i> Apartmanlar</a>
             <a href="{{ route('flats.index') }}" class="{{ request()->is('flats*') ? 'active' : '' }}"><i class="bi bi-door-open me-2"></i> Daireler</a>
+            <div class="text-white-50 small my-2 text-uppercase">Sistem Yönetimi</div>
+            <a href="{{ route('system.index') }}" class="{{ request()->is('system') && !request()->is('system/*') ? 'active' : '' }}"><i class="bi bi-gear me-2"></i> Sistem Ana Sayfa</a>
+            <a href="{{ route('system.settings') }}" class="{{ request()->is('system/settings*') ? 'active' : '' }}"><i class="bi bi-sliders me-2"></i> Sistem Ayarları</a>
+            <a href="{{ route('system.backup') }}" class="{{ request()->is('system/backup*') ? 'active' : '' }}"><i class="bi bi-archive me-2"></i> Yedekleme</a>
+            <a href="{{ route('system.logs') }}" class="{{ request()->is('system/logs*') ? 'active' : '' }}"><i class="bi bi-file-text me-2"></i> Loglar</a>
+            <a href="{{ route('system.cache') }}" class="{{ request()->is('system/cache*') ? 'active' : '' }}"><i class="bi bi-speedometer2 me-2"></i> Cache</a>
             <div class="text-white-50 small my-2 text-uppercase">Operasyon</div>
             <a href="#" class="disabled"><i class="bi bi-cash-coin me-2"></i> Finans</a>
             <a href="#" class="disabled"><i class="bi bi-megaphone me-2"></i> Duyurular</a>

@@ -9,6 +9,11 @@ use App\Http\Controllers\SettlementController;
 use App\Http\Controllers\FlatsController;
 use App\Http\Controllers\ResidentController;
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\SystemController;
+use App\Http\Controllers\BackupController;
+use App\Http\Controllers\LogController;
+use App\Http\Controllers\CacheController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,7 +28,16 @@ use App\Http\Controllers\AccountController;
 
 Route::get('/', function () {
     if (auth()->check()) {
-        return redirect()->route('dashboard');
+        // Rol bazlı yönlendirme middleware'i kullanılacak
+        $user = auth()->user();
+        
+        if ($user->hasRole('super_admin')) {
+            return redirect()->route('dashboard');
+        } elseif ($user->hasRole(['admin', 'site_manager'])) {
+            return redirect()->route('sites.index');
+        } elseif ($user->hasRole('resident')) {
+            return redirect()->route('resident.home');
+        }
     }
     return view('landing');
 });
@@ -38,6 +52,55 @@ Route::middleware([
     Route::get('/account/profile', [AccountController::class, 'profile'])->name('account.profile');
     Route::middleware(['role:super_admin'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        
+        // Kullanıcı Yönetimi
+        Route::resource('users', UserController::class);
+        Route::post('users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
+        Route::post('users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
+        
+        // Sistem Yönetimi
+        Route::prefix('system')->name('system.')->group(function () {
+            // Ana sayfa
+            Route::get('/', [SystemController::class, 'index'])->name('index');
+            Route::post('optimize', [SystemController::class, 'optimize'])->name('optimize');
+            
+            // Ayarlar
+            Route::get('settings', [SystemController::class, 'settings'])->name('settings');
+            Route::post('settings', [SystemController::class, 'updateSettings'])->name('update-settings');
+            
+            // Sağlık kontrolü
+            Route::get('health', [SystemController::class, 'health'])->name('health');
+            
+            // Cache yönetimi
+            Route::get('cache', [CacheController::class, 'index'])->name('cache');
+            Route::post('cache/clear', [CacheController::class, 'clear'])->name('cache.clear');
+            Route::post('cache/rebuild', [CacheController::class, 'rebuild'])->name('cache.rebuild');
+            Route::post('cache/optimize', [CacheController::class, 'optimize'])->name('cache.optimize');
+            Route::delete('cache/forget-key', [CacheController::class, 'forgetKey'])->name('cache.forget-key');
+            Route::get('cache/stats', [CacheController::class, 'stats'])->name('cache.stats');
+            
+            // Yedekleme
+            Route::get('backup', [BackupController::class, 'index'])->name('backup');
+            Route::post('backup/database', [BackupController::class, 'createDatabaseBackup'])->name('backup.database');
+            Route::post('backup/files', [BackupController::class, 'createFileBackup'])->name('backup.files');
+            Route::post('backup/full', [BackupController::class, 'createFullBackup'])->name('backup.full');
+            Route::get('backup/download/{filename}', [BackupController::class, 'download'])->name('backup.download');
+            Route::delete('backup/{filename}', [BackupController::class, 'delete'])->name('backup.delete');
+            Route::delete('backup', [BackupController::class, 'deleteAll'])->name('backup.delete-all');
+            
+            // Log yönetimi
+            Route::get('logs', [LogController::class, 'index'])->name('logs');
+            Route::get('logs/search', [LogController::class, 'search'])->name('logs.search');
+            Route::get('logs/stats', [LogController::class, 'stats'])->name('logs.stats');
+            Route::get('logs/live', [LogController::class, 'live'])->name('logs.live');
+            Route::get('logs/live-data', [LogController::class, 'liveData'])->name('logs.live-data');
+            Route::get('logs/download/{filename}', [LogController::class, 'download'])->name('logs.download');
+            Route::get('logs/export/{filename}', [LogController::class, 'export'])->name('logs.export');
+            Route::post('logs/compress/{filename}', [LogController::class, 'compress'])->name('logs.compress');
+            Route::delete('logs/{filename}', [LogController::class, 'delete'])->name('logs.delete');
+            Route::delete('logs', [LogController::class, 'clearAll'])->name('logs.clear-all');
+            Route::post('logs/clear-old', [LogController::class, 'clearOld'])->name('logs.clear-old');
+        });
     });
 
     // Site yönetimi (admin, site_manager, super_admin)
