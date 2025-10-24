@@ -31,6 +31,11 @@ class Site extends Model
         return $this->hasMany(Apartment::class);
     }
 
+    public function flats()
+    {
+        return $this->hasManyThrough(Flat::class, Apartment::class);
+    }
+
     public function getStatusLabelAttribute(): string
     {
         return match ($this->status) {

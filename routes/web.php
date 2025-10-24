@@ -46,17 +46,31 @@ Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
+    'check.approval',
 ])->group(function () {
     
     // Hesabım (her giriş yapmış kullanıcı)
     Route::get('/account/profile', [AccountController::class, 'profile'])->name('account.profile');
+    Route::put('/account/profile', [AccountController::class, 'updateProfile'])->name('account.profile.update');
+    Route::put('/account/password', [AccountController::class, 'updatePassword'])->name('account.password.update');
+    Route::post('/account/photo/upload', [AccountController::class, 'uploadPhoto'])->name('account.photo.upload');
+    Route::delete('/account/photo/delete', [AccountController::class, 'deletePhoto'])->name('account.photo.delete');
     Route::middleware(['role:super_admin'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         
-        // Kullanıcı Yönetimi
+        // Admin Onay Sistemi - ÖZEL ROUTE'LAR ÖNCE TANIMLANMALI
+        Route::get('users/pending-approval', [UserController::class, 'pendingApproval'])->name('users.pending-approval');
+        Route::post('users/bulk-approve', [UserController::class, 'bulkApprove'])->name('users.bulk-approve');
+        Route::post('users/bulk-reject', [UserController::class, 'bulkReject'])->name('users.bulk-reject');
+        
+        // Kullanıcı Yönetimi - Resource Route'lar
         Route::resource('users', UserController::class);
         Route::post('users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
         Route::post('users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
+        
+        // Admin Onay Sistemi - User Parametreli Route'lar
+        Route::post('users/{user}/approve', [UserController::class, 'approve'])->name('users.approve');
+        Route::post('users/{user}/reject', [UserController::class, 'reject'])->name('users.reject');
         
         // Sistem Yönetimi
         Route::prefix('system')->name('system.')->group(function () {

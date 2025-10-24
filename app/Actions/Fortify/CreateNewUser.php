@@ -25,6 +25,12 @@ class CreateNewUser implements CreatesNewUsers
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'phone' => ['nullable', 'string', 'max:50', 'unique:users,phone'],
+            'national_id' => ['nullable', 'string', 'max:11', 'unique:users,national_id'],
+            'gender' => ['nullable', 'in:male,female'],
+            'birth_date' => ['nullable', 'date', 'before:today'],
+            'address' => ['nullable', 'string', 'max:500'],
+            'emergency_contact_name' => ['nullable', 'string', 'max:255'],
+            'emergency_contact_phone' => ['nullable', 'string', 'max:20'],
             'password' => $this->passwordRules(),
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
         ])->validate();
@@ -34,7 +40,17 @@ class CreateNewUser implements CreatesNewUsers
             'last_name' => $input['last_name'],
             'email' => $input['email'],
             'phone' => $input['phone'] ?? null,
+            'national_id' => $input['national_id'] ?? null,
+            'gender' => $input['gender'] ?? null,
+            'birth_date' => $input['birth_date'] ?? null,
+            'address' => $input['address'] ?? null,
+            'emergency_contact_name' => $input['emergency_contact_name'] ?? null,
+            'emergency_contact_phone' => $input['emergency_contact_phone'] ?? null,
             'password' => Hash::make($input['password']),
+            'is_active' => true,
+            'is_approved' => false, // Yeni kullanıcılar onay bekler
+            'notification_email' => true,
+            'notification_sms' => false,
         ]);
 
         // Varsayılan rol: resident

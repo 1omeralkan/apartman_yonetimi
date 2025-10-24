@@ -27,10 +27,83 @@ class DashboardController extends Controller
         // Durum dağılımları (örnek)
         $flatStatusCounts = Flat::selectRaw("status, COUNT(*) as c")->groupBy('status')->pluck('c','status');
 
+        // Grafik verileri
+        $chartData = $this->getChartData();
+        $heatmapData = $this->getHeatmapData();
+
         return view('dashboard', compact(
             'totalSites','totalBlocks','totalApartments','totalFlats',
-            'recentSites','recentBlocks','recentApartments','flatStatusCounts'
+            'recentSites','recentBlocks','recentApartments','flatStatusCounts',
+            'chartData','heatmapData'
         ));
+    }
+
+    /**
+     * Grafik verilerini hazırla
+     */
+    private function getChartData(): array
+    {
+        // Son 12 ayın verileri
+        $months = [];
+        $sitesData = [];
+        $flatsData = [];
+        
+        for ($i = 11; $i >= 0; $i--) {
+            $date = now()->subMonths($i);
+            $months[] = $date->format('M Y');
+            
+            $sitesData[] = Site::whereYear('created_at', $date->year)
+                ->whereMonth('created_at', $date->month)
+                ->count();
+                
+            $flatsData[] = Flat::whereYear('created_at', $date->year)
+                ->whereMonth('created_at', $date->month)
+                ->count();
+        }
+
+        return [
+            'months' => $months,
+            'sites' => $sitesData,
+            'flats' => $flatsData,
+            'totalSites' => Site::count(),
+            'totalFlats' => Flat::count(),
+            'activeUsers' => User::where('is_active', true)->count(),
+            'pendingUsers' => User::where('is_approved', false)->count(),
+        ];
+    }
+
+    /**
+     * Heatmap verilerini hazırla
+     */
+    private function getHeatmapData(): array
+    {
+        // Site bazında daire dağılımı
+        $sites = Site::withCount('flats')->get();
+        $heatmap = [];
+        
+        foreach ($sites as $site) {
+            $heatmap[] = [
+                'name' => $site->name,
+                'value' => $site->flats_count,
+                'code' => $site->site_code,
+                'color' => $this->getHeatmapColor($site->flats_count)
+            ];
+        }
+
+        return $heatmap;
+    }
+
+    /**
+     * Heatmap renk kodunu belirle
+     */
+    private function getHeatmapColor(int $count): string
+    {
+        if ($count == 0) return '#e5e7eb'; // Gri
+        if ($count <= 5) return '#fef3c7'; // Açık sarı
+        if ($count <= 10) return '#fde68a'; // Sarı
+        if ($count <= 20) return '#f59e0b'; // Turuncu
+        if ($count <= 50) return '#ef4444'; // Kırmızı
+        return '#dc2626'; // Koyu kırmızı
     }
 }
 

@@ -80,8 +80,14 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="p-3 border rounded h-100 d-flex align-items-center justify-content-center text-muted small">
-                                Grafik/heatmap placeholder
+                            <div class="p-3 border rounded h-100">
+                                <div class="text-muted small mb-3">📊 Site Analizi & Heatmap</div>
+                                
+                                <!-- Grafik Alanı -->
+                                <div class="mb-3">
+                                    <canvas id="dashboardChart" width="400" height="200"></canvas>
+                                </div>
+                                
                             </div>
                         </div>
                     </div>
@@ -136,3 +142,99 @@
     </div>
 </div>
 @endsection
+
+@push('styles')
+<style>
+
+/* Chart Container */
+#dashboardChart {
+    max-height: 200px;
+    width: 100% !important;
+    height: auto !important;
+}
+
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+</style>
+@endpush
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Chart.js Grafik
+    const ctx = document.getElementById('dashboardChart').getContext('2d');
+    
+    const chartData = @json($chartData);
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: chartData.months,
+            datasets: [{
+                label: 'Yeni Siteler',
+                data: chartData.sites,
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                tension: 0.4,
+                fill: true
+            }, {
+                label: 'Yeni Daireler',
+                data: chartData.flats,
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 20
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: 'rgba(0,0,0,0.1)'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            },
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            }
+        }
+    });
+
+
+    // Auto-refresh (30 saniyede bir)
+    setInterval(function() {
+        // Bu kısım AJAX ile verileri güncelleyebilir
+        console.log('Dashboard data refreshed');
+    }, 30000);
+});
+</script>
+@endpush

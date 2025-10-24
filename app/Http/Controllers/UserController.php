@@ -56,6 +56,118 @@ class UserController extends Controller
     }
 
     /**
+     * Display pending approval users
+     */
+    public function pendingApproval(): View
+    {
+        $users = User::with(['roles', 'approvedBy'])
+            ->pendingApproval()
+            ->latest()
+            ->paginate(15);
+
+        return view('users.pending-approval', compact('users'));
+    }
+
+    /**
+     * Approve user
+     */
+    public function approve(User $user): RedirectResponse
+    {
+        try {
+            $user->approve();
+            
+            return redirect()->back()->with('success', 
+                "Kullanıcı {$user->first_name} {$user->last_name} başarıyla onaylandı."
+            );
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 
+                'Onaylama işlemi sırasında hata oluştu: ' . $e->getMessage()
+            );
+        }
+    }
+
+    /**
+     * Reject user approval and delete user
+     */
+    public function reject(User $user): RedirectResponse
+    {
+        try {
+            $userName = "{$user->first_name} {$user->last_name}";
+            
+            // Kullanıcıyı sil (onay reddedildiği için)
+            $user->delete();
+            
+            return redirect()->back()->with('success', 
+                "Kullanıcı {$userName} onayı reddedildi ve kaydı silindi."
+            );
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 
+                'Reddetme işlemi sırasında hata oluştu: ' . $e->getMessage()
+            );
+        }
+    }
+
+    /**
+     * Bulk approve users
+     */
+    public function bulkApprove(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'user_ids' => 'required|array',
+            'user_ids.*' => 'exists:users,id'
+        ]);
+
+        try {
+            $approvedCount = 0;
+            foreach ($request->user_ids as $userId) {
+                $user = User::find($userId);
+                if ($user && !$user->isApproved()) {
+                    $user->approve();
+                    $approvedCount++;
+                }
+            }
+
+            return redirect()->back()->with('success', 
+                "{$approvedCount} kullanıcı başarıyla onaylandı."
+            );
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 
+                'Toplu onaylama işlemi sırasında hata oluştu: ' . $e->getMessage()
+            );
+        }
+    }
+
+    /**
+     * Bulk reject users (delete them)
+     */
+    public function bulkReject(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'user_ids' => 'required|array',
+            'user_ids.*' => 'exists:users,id'
+        ]);
+
+        try {
+            $rejectedCount = 0;
+            foreach ($request->user_ids as $userId) {
+                $user = User::find($userId);
+                if ($user && !$user->isApproved()) {
+                    $user->delete();
+                    $rejectedCount++;
+                }
+            }
+
+            return redirect()->back()->with('success', 
+                "{$rejectedCount} kullanıcı reddedildi ve kayıtları silindi."
+            );
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 
+                'Toplu reddetme işlemi sırasında hata oluştu: ' . $e->getMessage()
+            );
+        }
+    }
+
+    /**
      * Show the form for creating a new resource.
      */
     public function create(): View

@@ -72,7 +72,6 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end shadow-sm">
                         <li><a class="dropdown-item" href="{{ route('account.profile') }}"><i class="bi bi-person me-2"></i>Profil</a></li>
-                        <li><a class="dropdown-item" href="{{ route('dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li>
                             <form method="POST" action="{{ route('logout') }}" class="px-3" data-confirm="Çıkış yapılsın mı?">
@@ -103,7 +102,16 @@
             @endrole
             <div class="text-white-50 small my-2 text-uppercase">Kullanıcı Yönetimi</div>
             @role('super_admin')
-            <a href="{{ route('users.index') }}" class="{{ request()->is('users*') ? 'active' : '' }}"><i class="bi bi-people me-2"></i> Kullanıcılar</a>
+            <a href="{{ route('users.index') }}" class="{{ request()->is('users*') && !request()->is('users/pending-approval*') ? 'active' : '' }}"><i class="bi bi-people me-2"></i> Kullanıcılar</a>
+            <a href="{{ route('users.pending-approval') }}" class="{{ request()->is('users/pending-approval*') ? 'active' : '' }}">
+                <i class="bi bi-clock-history me-2"></i> Onay Bekleyenler
+                @php
+                    $pendingCount = \App\Models\User::pendingApproval()->count();
+                @endphp
+                @if($pendingCount > 0)
+                    <span class="badge bg-warning ms-2">{{ $pendingCount }}</span>
+                @endif
+            </a>
             @endrole
             <a href="{{ route('sites.index') }}" class="{{ request()->is('sites*') ? 'active' : '' }}"><i class="bi bi-buildings me-2"></i> Siteler</a>
             <a href="{{ route('blocks.index') }}" class="{{ request()->is('blocks*') ? 'active' : '' }}"><i class="bi bi-diagram-3 me-2"></i> Bloklar</a>
