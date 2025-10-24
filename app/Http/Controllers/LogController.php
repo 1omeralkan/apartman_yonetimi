@@ -19,7 +19,8 @@ class LogController extends Controller
         $logs = [];
         $selectedLog = $request->get('log');
         $logContent = '';
-        $logLines = 100; // Varsayılan satır sayısı
+        $logLines = $request->get('lines', 100);
+        $selectedLogInfo = null;
 
         // Log dosyalarını listele
         if (File::exists($logDir)) {
@@ -32,6 +33,7 @@ class LogController extends Controller
                         'size' => $this->formatBytes($file->getSize()),
                         'modified' => date('d.m.Y H:i:s', $file->getMTime()),
                         'path' => $file->getPathname(),
+                        'size_bytes' => $file->getSize(),
                     ];
                 }
             }
@@ -45,9 +47,31 @@ class LogController extends Controller
         // Seçili log dosyasının içeriğini getir
         if ($selectedLog && File::exists($logDir . '/' . $selectedLog)) {
             $logContent = $this->getLogContent($logDir . '/' . $selectedLog, $logLines);
+            $selectedLogInfo = [
+                'name' => $selectedLog,
+                'size' => $this->formatBytes(File::size($logDir . '/' . $selectedLog)),
+                'modified' => date('d.m.Y H:i:s', File::lastModified($logDir . '/' . $selectedLog)),
+            ];
         }
 
-        return view('system.logs', compact('logs', 'selectedLog', 'logContent', 'logLines'));
+        // İstatistikler
+        $totalSize = $this->formatBytes(array_sum(array_column($logs, 'size_bytes')));
+        $errorCount = $this->getErrorCount($logs);
+        $lastModified = count($logs) > 0 ? $logs[0]['modified'] : 'Bilinmiyor';
+
+        $controller = $this;
+        
+        return view('system.logs', compact(
+            'logs', 
+            'selectedLog', 
+            'logContent', 
+            'logLines', 
+            'selectedLogInfo',
+            'totalSize',
+            'errorCount',
+            'lastModified',
+            'controller'
+        ));
     }
 
     /**
@@ -301,59 +325,69 @@ class LogController extends Controller
     }
 
     /**
-     * Log dosyası türünü belirle
+     * Log türünü belirle
      */
-    private function getLogType(string $filename): string
+    public function getLogType(string $filename): string
     {
-        if (strpos($filename, 'laravel') !== false) {
-            return 'Laravel';
-        } elseif (strpos($filename, 'error') !== false) {
-            return 'Error';
+        if (strpos($filename, 'error') !== false) {
+            return 'error';
         } elseif (strpos($filename, 'access') !== false) {
-            return 'Access';
-        } elseif (strpos($filename, 'security') !== false) {
-            return 'Security';
+            return 'access';
+        } elseif (strpos($filename, 'laravel') !== false) {
+            return 'laravel';
         }
-        return 'Other';
+        return 'general';
     }
 
     /**
-     * Log satırından timestamp çıkar
+     * Hata sayısını hesapla
+     */
+    private function getErrorCount(array $logs): int
+    {
+        $errorCount = 0;
+        foreach ($logs as $log) {
+            if (strpos($log['name'], 'error') !== false) {
+                $errorCount++;
+            }
+        }
+        return $errorCount;
+    }
+
+    /**
+     * Log seviyesini çıkar
+     */
+    private function extractLogLevel(string $line): string
+    {
+        if (preg_match('/\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\] (\w+)\./', $line, $matches)) {
+            return strtoupper($matches[2]);
+        }
+        return 'INFO';
+    }
+
+    /**
+     * Zaman damgasını çıkar
      */
     private function extractTimestamp(string $line): string
     {
         if (preg_match('/\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]/', $line, $matches)) {
             return $matches[1];
         }
-        return '';
+        return date('Y-m-d H:i:s');
     }
 
     /**
-     * Log satırından seviye çıkar
-     */
-    private function extractLogLevel(string $line): string
-    {
-        $levels = ['ERROR', 'WARNING', 'INFO', 'DEBUG', 'CRITICAL', 'ALERT', 'EMERGENCY'];
-        
-        foreach ($levels as $level) {
-            if (strpos($line, ".{$level}:") !== false) {
-                return $level;
-            }
-        }
-        
-        return 'INFO';
-    }
-
-    /**
-     * Log satırından mesaj çıkar
+     * Mesajı çıkar
      */
     private function extractMessage(string $line): string
     {
-        if (preg_match('/\.(ERROR|WARNING|INFO|DEBUG|CRITICAL|ALERT|EMERGENCY):\s*(.+)/', $line, $matches)) {
-            return trim($matches[2]);
+        if (preg_match('/\[.*?\] \w+\.(.*)/', $line, $matches)) {
+            return trim($matches[1]);
         }
         return trim($line);
     }
+
+
+
 
     /**
      * Log dosyasını sıkıştır

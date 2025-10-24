@@ -90,6 +90,11 @@ class User extends Authenticatable
         return $this->hasMany(FlatResident::class);
     }
 
+    public function flatResidents()
+    {
+        return $this->hasMany(FlatResident::class);
+    }
+
     public function complaints()
     {
         return $this->hasMany(Complaint::class);

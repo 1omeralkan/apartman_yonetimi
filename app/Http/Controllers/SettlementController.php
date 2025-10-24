@@ -63,7 +63,11 @@ class SettlementController extends Controller
 
     public function assignForm(Flat $flat): View
     {
-        $users = User::orderBy('first_name')->get(['id','first_name','last_name','email']);
+        // Sadece henüz daireye atanmamış kullanıcıları getir
+        $users = User::whereDoesntHave('flatResidents', function($query) {
+            $query->where('status', 'active');
+        })->orderBy('first_name')->get(['id','first_name','last_name','email']);
+        
         return view('settlement.assign', compact('flat','users'));
     }
 
